@@ -129,6 +129,7 @@ familiaController.patch("/:id", async (ctx) => {
   }
 });
 
+// Deletar uma família
 familiaController.delete("/:numeroContrato", async (ctx) => {
   try {
     const numeroContrato = parseInt(ctx.req.param("numeroContrato"));

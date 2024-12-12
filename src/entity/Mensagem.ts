@@ -15,9 +15,6 @@ export class Mensagem {
   @Column({ type: "date" })
   sendAt!: Date;
 
-  @Column({ type: "uuid" })
-  parenteId!: string;
-
   @ManyToOne(() => Parente, (parente) => parente.mensagens)
   parente!: Parente;
 

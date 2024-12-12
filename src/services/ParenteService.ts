@@ -13,7 +13,6 @@ export class ParenteService {
     dataNascimento: string,
     dataObito: string
   ): Promise<Parente> {
-    // Busca a família pelo número do contrato
     const familia = await this.familiaRepository.findOneBy({ numeroContrato });
 
     if (!familia) {

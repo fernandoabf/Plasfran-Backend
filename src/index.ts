@@ -1,9 +1,11 @@
 import "reflect-metadata"; // Deve ser importado antes de qualquer entidade ou uso do TypeORM
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import familiaRoutes from "./routes/familiaRoutes.js";
 import { AppDataSource } from "./database/ormconfig.js";
+
+import familiaRoutes from "./routes/familiaRoutes.js";
 import parenteRoutes from "./routes/parenteRoutes.js";
+import mensagemRoutes from "./routes/mensagemRoutes.ts";
 
 const app = new Hono();
 
@@ -12,8 +14,9 @@ app.get("/", (c) => {
 });
 
 app.route("/familia", familiaRoutes);
-
 app.route("/parente", parenteRoutes);
+app.route("/mensagem", mensagemRoutes);
+
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
 
