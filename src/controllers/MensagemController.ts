@@ -21,9 +21,9 @@ mensagemController.post("/:parenteId", async (ctx) => {
       message: "Mensagem adicionada com sucesso",
       mensagemId: mensagem.mensagemId,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao adicionar mensagem:", error);
-    return ctx.json({ error: "Erro ao adicionar a mensagem" }, 400);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 
@@ -41,9 +41,9 @@ mensagemController.get("/:parenteId", async (ctx) => {
       message: "Mensagens encontradas com sucesso",
       mensagens,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao buscar mensagens:", error);
-    return ctx.json({ error: "Erro ao buscar mensagens" }, 400);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 
@@ -55,9 +55,9 @@ mensagemController.delete("/:mensagemId", async (ctx) => {
     await mensagemService.deleteMensagemById(mensagemId);
 
     return ctx.json({ message: "Mensagem deletada com sucesso" });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao deletar mensagem:", error);
-    return ctx.json({ error: "Erro ao deletar mensagem" }, 400);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 
@@ -78,9 +78,9 @@ mensagemController.patch("/:mensagemId", async (ctx) => {
       mensagemId: mensagem.mensagemId,
       mensagemEditada: mensagem.mensagem,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Erro ao editar mensagem:", error);
-    return ctx.json({ error: "Erro ao editar mensagem" }, 400);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 export default mensagemController;

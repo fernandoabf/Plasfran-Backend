@@ -15,6 +15,43 @@ interface ParenteRequest {
   excluido: boolean;
 }
 
+// Rota para buscar os parentes de uma família pelo número de contrato
+parenteController.get("/contrato/:numeroContrato", async (ctx) => {
+  const numeroContrato = parseInt(ctx.req.param("numeroContrato")); // Obtém o número do contrato da URL
+
+  try {
+    // Obtém os parentes da família com o número de contrato
+    const parentes = await parenteService.getParentesByContrato(numeroContrato);
+
+    // Retorna a lista de parentes
+    return ctx.json({
+      message: "Parentes encontrados com sucesso",
+      parentes,
+    });
+  } catch (error: any) {
+    console.error("Erro ao buscar parentes:", error);
+    return ctx.json({ error: error.message }, 400);
+  }
+});
+
+// Rota para buscar um parente pelo ID
+parenteController.get("/:parenteID", async (ctx) => {
+  const parenteID = ctx.req.param("parenteID"); // Obtém o número do contrato da URL
+
+  try {
+    // Obtém os parentes da família com o número de contrato
+    const parente = await parenteService.getParentesByID(parenteID);
+
+    return ctx.json({
+      message: "Parentes encontrados com sucesso",
+      parente,
+    });
+  } catch (error: any) {
+    console.error("Erro ao buscar parentes:", error);
+    return ctx.json({ error: error.message }, 400);
+  }
+});
+
 // Rota para adicionar um parente ao número de contrato
 parenteController.post("/:numeroContrato", async (ctx) => {
   // Captura o parâmetro da URL (numeroContrato)
@@ -38,47 +75,54 @@ parenteController.post("/:numeroContrato", async (ctx) => {
       message: "Parente adicionado com sucesso",
       parenteId: parente.parenteId,
     });
-  } catch (error) {
+  } catch (error: any) {
     // Em caso de erro, loga e retorna o erro
     console.error("Erro ao adicionar parente:", error);
-    return ctx.json({ error: "Erro ao adicionar o parente" }, 400);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 
-// Rota para buscar os parentes de uma família pelo número de contrato
-parenteController.get("/contrato/:numeroContrato", async (ctx) => {
-  const numeroContrato = parseInt(ctx.req.param("numeroContrato")); // Obtém o número do contrato da URL
+// Rota para editar um parente pelo ID
+parenteController.patch("/:parenteID", async (ctx) => {
+  // Captura o parâmetro da URL (parenteID)
+  const parenteID = ctx.req.param("parenteID");
+
+  // Captura os dados do corpo da requisição
+  const parenteData: ParenteRequest = await ctx.req.json();
 
   try {
-    // Obtém os parentes da família com o número de contrato
-    const parentes = await parenteService.getParentesByContrato(numeroContrato);
+    // Chama o serviço para editar o parente com base no ID
+    const parente = await parenteService.editParenteById(
+      parenteID,
+      parenteData
+    );
 
-    // Retorna a lista de parentes
+    // Retorna a resposta com sucesso
     return ctx.json({
-      message: "Parentes encontrados com sucesso",
-      parentes,
+      message: "Parente editado com sucesso",
+      parenteId: parente.parenteId,
     });
-  } catch (error) {
-    console.error("Erro ao buscar parentes:", error);
-    return ctx.json({ error: "Erro ao buscar parentes" }, 400);
+  } catch (error: any) {
+    // Em caso de erro, loga e retorna o erro
+    console.error("Erro ao editar parente:", error);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 
-// Rota para buscar um parente pelo ID
-parenteController.get("/:parenteID", async (ctx) => {
-  const parenteID = ctx.req.param("parenteID"); // Obtém o número do contrato da URL
+// Rota para deletar um parente pelo ID
+parenteController.delete("/:parenteID", async (ctx) => {
+  // Captura o parâmetro da URL (parenteID)
+  const parenteID = ctx.req.param("parenteID");
 
   try {
-    // Obtém os parentes da família com o número de contrato
-    const parente = await parenteService.getParentesByID(parenteID);
+    // Chama o serviço para deletar o parente com base no ID
+    await parenteService.deleteParenteById(parenteID);
 
-    return ctx.json({
-      message: "Parentes encontrados com sucesso",
-      parente,
-    });
-  } catch (error) {
-    console.error("Erro ao buscar parentes:", error);
-    return ctx.json({ error: "Erro ao buscar parentes" }, 400);
+    // Retorna a resposta com sucesso
+    return ctx.json({ message: "Parente deletado com sucesso" });
+  } catch (error: any) {
+    console.error("Erro ao deletar parente:", error);
+    return ctx.json({ error: error.message }, 400);
   }
 });
 
