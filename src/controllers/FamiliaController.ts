@@ -113,7 +113,7 @@ familiaController.patch("/:id", async (ctx) => {
     const familyDataForEdit: Partial<{ contrato: number; titular: string }> =
       await ctx.req.json();
 
-    const familia = await familiaService.editFamiliaByContrato(
+    const familia = await familiaService.editFamiliaById(
       familiaId,
       familyDataForEdit
     );
@@ -123,6 +123,29 @@ familiaController.patch("/:id", async (ctx) => {
     }
 
     return ctx.json({ message: "Família atualizada com sucesso", familia });
+  } catch (error: any) {
+    console.error(error);
+    return ctx.json({ error: error.message }, 500);
+  }
+});
+
+familiaController.delete("/:numeroContrato", async (ctx) => {
+  try {
+    const numeroContrato = parseInt(ctx.req.param("numeroContrato"));
+
+    if (isNaN(numeroContrato)) {
+      return ctx.json({ error: "Número de contrato inválido" }, 400);
+    }
+
+    const familia = await familiaService.removeFamiliaByContrato(
+      numeroContrato
+    );
+
+    if (!familia) {
+      return ctx.json({ error: "Família não encontrada" }, 404);
+    }
+
+    return ctx.json({ message: "Família removida com sucesso", familia });
   } catch (error: any) {
     console.error(error);
     return ctx.json({ error: error.message }, 500);

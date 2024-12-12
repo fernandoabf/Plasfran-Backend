@@ -48,7 +48,7 @@ A funcionalidade de criar uma família permite ao usuário adicionar uma nova fa
 
 Permite editar ou remover os dados da família, como o titular ou o número de contrato.
 
-- **Rota:** `PUT /familia/{familiaId}`
+- **Rota:** `PATCH /familia/{familiaId}`
 - **Descrição:** Edita os dados de uma família existente.
 - **Corpo da Requisição (JSON):**
 
@@ -115,7 +115,7 @@ Permite adicionar novos falecidos (parentes) à família.
 
 Permite editar ou remover os dados de um parente (falecido), como nome, foto, data de nascimento e data de óbito.
 
-- **Rota:** `PUT /parente/{parenteId}`
+- **Rota:** `PATCH /parente/{parenteId}`
 - **Descrição:** Edita os dados de um parente.
 - **Corpo da Requisição (JSON):**
 
@@ -198,7 +198,7 @@ Permite remover uma mensagem que foi atribuída a um falecido, caso o usuário t
 
 Permite que o usuário que enviou a mensagem edite ou remova suas próprias mensagens.
 
-- **Rota:** `PUT /parente/{parenteId}/mensagem/{mensagemId}`
+- **Rota:** `PATCH /parente/{parenteId}/mensagem/{mensagemId}`
 - **Descrição:** Edita uma mensagem enviada pelo usuário.
 - **Corpo da Requisição (JSON):**
 

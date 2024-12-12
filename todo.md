@@ -21,7 +21,7 @@
 - **Tarefa:** Implementar a funcionalidade de edição e remoção de dados de famílias.
 
   - **Subtarefas:**
-    - Criar a rota `PUT /familia/{familiaId}` para editar dados da família.
+    - Criar a rota `PATCH /familia/{familiaId}` para editar dados da família.
     - Criar a rota `DELETE /familia/{familiaId}` para remover a família.
     - Validar dados e garantir que os parâmetros sejam consistentes.
 
@@ -35,7 +35,7 @@
 - **Tarefa:** Implementar a funcionalidade de editar e remover parentes.
 
   - **Subtarefas:**
-    - Criar a rota `PUT /parente/{parenteId}` para editar dados do parente.
+    - Criar a rota `PATCH /parente/{parenteId}` para editar dados do parente.
     - Criar a rota `DELETE /parente/{parenteId}` para remover o parente.
 
 - **Tarefa:** Implementar a funcionalidade de enviar mensagens para falecidos.
@@ -54,7 +54,7 @@
 - **Tarefa:** Implementar a funcionalidade de editar mensagens (somente do usuário remetente).
 
   - **Subtarefas:**
-    - Criar a rota `PUT /parente/{parenteId}/mensagem/{mensagemId}`.
+    - Criar a rota `PATCH /parente/{parenteId}/mensagem/{mensagemId}`.
     - Permitir edição apenas de mensagens enviadas pelo usuário.
 
 - **Tarefa:** Implementar a funcionalidade de busca por família e parente.

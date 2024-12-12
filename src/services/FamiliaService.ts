@@ -48,7 +48,7 @@ export class FamiliaService {
     });
   }
 
-  async editFamiliaByContrato(
+  async editFamiliaById(
     familiaId: string,
     data: { numeroContrato?: number; titular?: string }
   ): Promise<Familia | null> {
@@ -69,6 +69,26 @@ export class FamiliaService {
     }
 
     familia.editadoData = new Date();
+    await this.familiaRepository.save(familia);
+
+    return familia;
+  }
+
+  async removeFamiliaByContrato(
+    numeroContrato: number
+  ): Promise<Familia | null> {
+    const familia = await this.familiaRepository.findOne({
+      where: { numeroContrato, excluido: false },
+      relations: ["parentes"],
+    });
+
+    if (!familia) {
+      return null;
+    }
+
+    familia.excluido = true;
+    familia.editadoData = new Date();
+
     await this.familiaRepository.save(familia);
 
     return familia;
