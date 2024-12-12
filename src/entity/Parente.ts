@@ -25,6 +25,9 @@ export class Parente {
   @Column({ type: "date" })
   dataObito!: Date;
 
+  @Column({ type: "varchar" })
+  mensagemObito!: string;
+
   @OneToMany(() => Mensagem, (mensagem) => mensagem.parente)
   mensagens?: Mensagem[];
 

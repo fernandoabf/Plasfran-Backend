@@ -71,6 +71,7 @@ export class ParenteService {
       fotoFalecido?: string;
       dataNascimento?: string;
       dataObito?: string;
+      mensagemObito?: string;
     }
   ): Promise<Parente> {
     // Busca o parente pelo ID
@@ -95,6 +96,9 @@ export class ParenteService {
     }
     if (data.dataObito !== undefined && data.dataObito !== null) {
       parente.dataObito = new Date(data.dataObito);
+    }
+    if (data.mensagemObito !== undefined && data.mensagemObito !== null) {
+      parente.mensagemObito = data.mensagemObito;
     }
 
     // Salva as alterações no banco de dados e retorna o parente atualizado

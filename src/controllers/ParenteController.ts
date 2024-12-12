@@ -11,6 +11,7 @@ interface ParenteRequest {
   fotoFalecido?: string;
   dataNascimento: string;
   dataObito: string;
+  mensagemObito?: string;
   editadoData?: string;
   excluido: boolean;
 }
