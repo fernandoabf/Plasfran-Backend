@@ -53,4 +53,23 @@ export class MensagemService {
 
     return this.mensagemRepository.save(mensagem);
   }
+
+  async editMensagemById(
+    mensagemId: string,
+    mensagemEdited: string
+  ): Promise<Mensagem> {
+    const mensagem = await this.mensagemRepository.findOne({
+      where: { mensagemId, excluido: false },
+    });
+
+    if (!mensagem) {
+      throw new Error("Mensagem com o ID fornecido não encontrada");
+    }
+
+    mensagem.mensagem = mensagemEdited;
+
+    mensagem.editadoData = new Date();
+
+    return this.mensagemRepository.save(mensagem);
+  }
 }

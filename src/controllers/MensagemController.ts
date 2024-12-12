@@ -60,4 +60,27 @@ mensagemController.delete("/:mensagemId", async (ctx) => {
     return ctx.json({ error: "Erro ao deletar mensagem" }, 400);
   }
 });
+
+// Rota para editar uma mensagem pelo ID
+mensagemController.patch("/:mensagemId", async (ctx) => {
+  const mensagemId = ctx.req.param("mensagemId");
+
+  const mensagemData = (await ctx.req.json()) as { mensagem: string };
+
+  try {
+    const mensagem = await mensagemService.editMensagemById(
+      mensagemId,
+      mensagemData.mensagem
+    );
+
+    return ctx.json({
+      message: "Mensagem editada com sucesso",
+      mensagemId: mensagem.mensagemId,
+      mensagemEditada: mensagem.mensagem,
+    });
+  } catch (error) {
+    console.error("Erro ao editar mensagem:", error);
+    return ctx.json({ error: "Erro ao editar mensagem" }, 400);
+  }
+});
 export default mensagemController;
