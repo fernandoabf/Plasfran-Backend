@@ -28,7 +28,7 @@ export class MensagemService {
 
     return this.mensagemRepository.save(mensagemEntity);
   }
-  async getMensagesByParenteId(parenteId: string): Promise<Mensagem[]> {
+  async getMensagensByParenteId(parenteId: string): Promise<Mensagem[]> {
     const parente = await this.parenteRepository.findOne({
       where: { parenteId, excluido: false },
       relations: ["mensagens"],
@@ -37,7 +37,20 @@ export class MensagemService {
     if (!parente) {
       throw new Error("Parente com o ID fornecido não encontrado");
     }
+    return parente.mensagens?.filter((mensagem) => !mensagem.excluido) ?? [];
+  }
 
-    return parente.mensagens || [];
+  async deleteMensagemById(mensagemId: string): Promise<Mensagem> {
+    const mensagem = await this.mensagemRepository.findOne({
+      where: { mensagemId, excluido: false },
+    });
+
+    if (!mensagem) {
+      throw new Error("Mensagem com o ID fornecido não encontrada");
+    }
+
+    mensagem.excluido = true;
+
+    return this.mensagemRepository.save(mensagem);
   }
 }

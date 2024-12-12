@@ -4,6 +4,7 @@ import { MensagemService } from "../services/MensagemService.ts";
 const mensagemController = new Hono();
 const mensagemService = new MensagemService();
 
+// Rota para adicionar uma mensagem a um parente pelo ID
 mensagemController.post("/:parenteId", async (ctx) => {
   const parenteId = ctx.req.param("parenteId");
 
@@ -26,12 +27,16 @@ mensagemController.post("/:parenteId", async (ctx) => {
   }
 });
 
+// Rota para buscar as mensagens de um parente pelo ID
 mensagemController.get("/:parenteId", async (ctx) => {
   const parenteId = ctx.req.param("parenteId");
 
   try {
-    const mensagens = await mensagemService.getMensagesByParenteId(parenteId);
+    const mensagens = await mensagemService.getMensagensByParenteId(parenteId);
 
+    if (mensagens.length === 0) {
+      return ctx.json({ error: "Nenhuma mensagem foi não encontradas" }, 404);
+    }
     return ctx.json({
       message: "Mensagens encontradas com sucesso",
       mensagens,
@@ -39,6 +44,20 @@ mensagemController.get("/:parenteId", async (ctx) => {
   } catch (error) {
     console.error("Erro ao buscar mensagens:", error);
     return ctx.json({ error: "Erro ao buscar mensagens" }, 400);
+  }
+});
+
+// Rota para deletar uma mensagem pelo ID
+mensagemController.delete("/:mensagemId", async (ctx) => {
+  const mensagemId = ctx.req.param("mensagemId");
+
+  try {
+    await mensagemService.deleteMensagemById(mensagemId);
+
+    return ctx.json({ message: "Mensagem deletada com sucesso" });
+  } catch (error) {
+    console.error("Erro ao deletar mensagem:", error);
+    return ctx.json({ error: "Erro ao deletar mensagem" }, 400);
   }
 });
 export default mensagemController;

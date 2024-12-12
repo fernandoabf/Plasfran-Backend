@@ -45,6 +45,7 @@ parenteController.post("/:numeroContrato", async (ctx) => {
   }
 });
 
+// Rota para buscar os parentes de uma família pelo número de contrato
 parenteController.get("/contrato/:numeroContrato", async (ctx) => {
   const numeroContrato = parseInt(ctx.req.param("numeroContrato")); // Obtém o número do contrato da URL
 
@@ -63,6 +64,7 @@ parenteController.get("/contrato/:numeroContrato", async (ctx) => {
   }
 });
 
+// Rota para buscar um parente pelo ID
 parenteController.get("/:parenteID", async (ctx) => {
   const parenteID = ctx.req.param("parenteID"); // Obtém o número do contrato da URL
 
