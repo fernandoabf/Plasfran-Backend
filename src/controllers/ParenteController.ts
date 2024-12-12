@@ -11,6 +11,8 @@ interface ParenteRequest {
   fotoFalecido?: string;
   dataNascimento: string;
   dataObito: string;
+  editadoData?: string;
+  excluido: boolean;
 }
 
 // Rota para adicionar um parente ao número de contrato
@@ -43,7 +45,7 @@ parenteController.post("/:numeroContrato", async (ctx) => {
   }
 });
 
-parenteController.get("/:numeroContrato", async (ctx) => {
+parenteController.get("/contrato/:numeroContrato", async (ctx) => {
   const numeroContrato = parseInt(ctx.req.param("numeroContrato")); // Obtém o número do contrato da URL
 
   try {
@@ -54,6 +56,23 @@ parenteController.get("/:numeroContrato", async (ctx) => {
     return ctx.json({
       message: "Parentes encontrados com sucesso",
       parentes,
+    });
+  } catch (error) {
+    console.error("Erro ao buscar parentes:", error);
+    return ctx.json({ error: "Erro ao buscar parentes" }, 400);
+  }
+});
+
+parenteController.get("/:parenteID", async (ctx) => {
+  const parenteID = ctx.req.param("parenteID"); // Obtém o número do contrato da URL
+
+  try {
+    // Obtém os parentes da família com o número de contrato
+    const parente = await parenteService.getParentesByID(parenteID);
+
+    return ctx.json({
+      message: "Parentes encontrados com sucesso",
+      parente,
     });
   } catch (error) {
     console.error("Erro ao buscar parentes:", error);

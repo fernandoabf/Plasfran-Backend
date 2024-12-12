@@ -1,73 +1,131 @@
 import { Hono } from "hono";
 import { FamiliaService } from "../services/FamiliaService.js";
+import { QueryFailedError } from "typeorm";
 
 const familiaController = new Hono();
 const familiaService = new FamiliaService();
 
-// Define um tipo para a estrutura de dados da família
 interface FamiliaRequest {
   numeroContrato: number;
   titular: string;
+  editadoData?: string;
+  excluido: boolean;
   parentes?: {
     nome: string;
     fotoFalecido?: string;
     dataNascimento: string;
     dataObito: string;
-  }[]; // Parentes agora é opcional
+    editadoData?: string;
+    excluido: boolean;
+  }[];
 }
 
-// Rota para criar uma família
-familiaController.post("/", async (ctx) => {
+// Buscar uma família pelo número do contrato
+familiaController.get("/:numeroContrato", async (ctx) => {
   try {
-    // Validação dos dados recebidos
-    const familiaData: FamiliaRequest = await ctx.req.json();
-
-    if (!familiaData.numeroContrato || !familiaData.titular) {
-      return ctx.json(
-        { error: "Dados incompletos: número de contrato ou titular ausentes" },
-        400
-      );
+    const numeroContrato = parseInt(ctx.req.param("numeroContrato"));
+    if (isNaN(numeroContrato)) {
+      return ctx.json({ error: "Número de contrato inválido" }, 400);
     }
 
-    // Chama o serviço para criar a família com parentes (caso existam)
-    const familia = await familiaService.createFamiliaWithOptionalParentes(
-      familiaData.numeroContrato,
-      familiaData.titular,
-      familiaData.parentes
-    );
-
-    // Retorna a resposta com sucesso
-    return ctx.json({
-      message: "Família criada com sucesso",
-      familiaId: familia.familiaId,
-    });
-  } catch (error) {
-    console.error("Erro ao criar família:", error);
-
-    // Responde com um erro 400 em caso de falha
-    return ctx.json({ error: "Erro ao criar a família" }, 400);
-  }
-});
-
-// Rota para buscar a família pelo número do contrato
-familiaController.get("/:numeroContrato", async (ctx) => {
-  const numeroContrato = parseInt(ctx.req.param("numeroContrato"));
-
-  try {
-    // Chama o serviço para buscar a família pelo número do contrato
     const familia = await familiaService.getFamiliaByContrato(numeroContrato);
 
     if (!familia) {
       return ctx.json({ error: "Família não encontrada" }, 404);
     }
 
+    return ctx.json({ message: "Família encontrada com sucesso", familia });
+  } catch (error: any) {
+    console.error(error);
+    return ctx.json({ error: error.message }, 500);
+  }
+});
+
+// Criar uma nova família
+familiaController.post("/", async (ctx) => {
+  try {
+    const familiaData: FamiliaRequest = await ctx.req.json();
+
+    if (
+      !familiaData.numeroContrato ||
+      typeof familiaData.numeroContrato !== "number"
+    ) {
+      return ctx.json(
+        { error: "Dados inválidos: número de contrato ausente ou inválido" },
+        400
+      );
+    }
+
+    if (!familiaData.titular || typeof familiaData.titular !== "string") {
+      return ctx.json(
+        { error: "Dados inválidos: Nome do titular ausente ou inválido" },
+        400
+      );
+    }
+
+    if (familiaData.parentes) {
+      for (const parente of familiaData.parentes) {
+        if (!parente.nome || typeof parente.nome !== "string") {
+          return ctx.json(
+            { error: "Dados inválidos: Nome do parente ausente ou inválido" },
+            400
+          );
+        }
+        if (
+          parente.dataNascimento &&
+          isNaN(Date.parse(parente.dataNascimento))
+        ) {
+          return ctx.json(
+            { error: "Dados inválidos: Data de nascimento inválida" },
+            400
+          );
+        }
+        if (parente.dataObito && isNaN(Date.parse(parente.dataObito))) {
+          return ctx.json(
+            { error: "Dados inválidos: Data de óbito inválida" },
+            400
+          );
+        }
+      }
+    }
+
+    const familia = await familiaService.createFamiliaWithOptionalParentes(
+      familiaData.numeroContrato,
+      familiaData.titular,
+      familiaData.parentes
+    );
+
     return ctx.json({
-      message: "Família encontrada com sucesso",
-      familia,
+      message: "Família criada com sucesso",
+      familiaId: familia.familiaId,
     });
-  } catch (error) {
-    console.error("Erro ao buscar família:", error);
-    return ctx.json({ error: "Erro ao buscar família" }, 400);
+  } catch (error: any) {
+    console.error(error);
+    return ctx.json({ error: error.message }, 500);
+  }
+});
+
+// Atualizar dados de uma família
+familiaController.patch("/:id", async (ctx) => {
+  try {
+    const familiaId = ctx.req.param("familiaId") as string;
+
+    const familyDataForEdit: Partial<{ contrato: number; titular: string }> =
+      await ctx.req.json();
+
+    const familia = await familiaService.editFamiliaByContrato(
+      familiaId,
+      familyDataForEdit
+    );
+
+    if (!familia) {
+      return ctx.json({ error: "Família não encontrada" }, 404);
+    }
+
+    return ctx.json({ message: "Família atualizada com sucesso", familia });
+  } catch (error: any) {
+    console.error(error);
+    return ctx.json({ error: error.message }, 500);
   }
 });
 

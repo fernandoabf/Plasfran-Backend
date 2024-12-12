@@ -1,7 +1,5 @@
 import "reflect-metadata"; // Importante para o TypeORM
 import { DataSource } from "typeorm";
-import { Familia } from "../models/Familia.js";
-import { Parente } from "../models/Parente.js";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -12,7 +10,7 @@ export const AppDataSource = new DataSource({
   database: "testedatabase", // Atualize com o seu banco
   synchronize: true, // Sincroniza com o banco
   logging: true, // Loga as queries para debug
-  entities: [Familia, Parente], // Certifique-se de que as entidades estão sendo registradas aqui
-  migrations: [],
+  entities: ["src/entity/*.ts"], // Certifique-se de que as entidades estão sendo registradas aqui
+  migrations: ["src/migrations/*.ts"],
   subscribers: [],
 });

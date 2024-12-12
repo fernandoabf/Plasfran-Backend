@@ -1,5 +1,5 @@
-import { Familia } from "../models/Familia.js";
-import { Parente } from "../models/Parente.js";
+import { Familia } from "../entity/Familia.ts";
+import { Parente } from "../entity/Parente.ts";
 import { AppDataSource } from "../database/ormconfig.js";
 
 export class FamiliaService {
@@ -9,42 +9,68 @@ export class FamiliaService {
   async createFamiliaWithOptionalParentes(
     numeroContrato: number,
     titular: string,
-    parentesData:
-      | {
-          nome: string;
-          fotoFalecido?: string;
-          dataNascimento: string;
-          dataObito: string;
-        }[]
-      | undefined
+    parentesData?: {
+      nome: string;
+      fotoFalecido?: string;
+      dataNascimento: string;
+      dataObito: string;
+    }[]
   ): Promise<Familia> {
-    const familia = this.familiaRepository.create({
-      numeroContrato,
-      titular,
-    });
+    return AppDataSource.transaction(async (transactionManager) => {
+      const familia = this.familiaRepository.create({
+        numeroContrato,
+        titular,
+      });
+      const savedFamilia = await transactionManager.save(familia);
 
-    const savedFamilia = await this.familiaRepository.save(familia);
+      if (parentesData && parentesData.length > 0) {
+        const parentes = parentesData.map((parenteData) =>
+          this.parenteRepository.create({
+            nome: parenteData.nome,
+            fotoFalecido: parenteData.fotoFalecido,
+            dataNascimento: new Date(parenteData.dataNascimento),
+            dataObito: new Date(parenteData.dataObito),
+            familia: savedFamilia,
+          })
+        );
 
-    if (parentesData && parentesData.length > 0) {
-      for (const parenteData of parentesData) {
-        const parente = this.parenteRepository.create({
-          nome: parenteData.nome,
-          fotoFalecido: parenteData.fotoFalecido,
-          dataNascimento: new Date(parenteData.dataNascimento),
-          dataObito: new Date(parenteData.dataObito),
-          familia: savedFamilia,
-        });
-        await this.parenteRepository.save(parente);
+        await transactionManager.save(Parente, parentes);
       }
-    }
 
-    return savedFamilia;
+      return savedFamilia;
+    });
   }
 
   async getFamiliaByContrato(numeroContrato: number): Promise<Familia | null> {
     return this.familiaRepository.findOne({
-      where: { numeroContrato },
+      where: { numeroContrato, excluido: false },
       relations: ["parentes"],
     });
+  }
+
+  async editFamiliaByContrato(
+    familiaId: string,
+    data: { numeroContrato?: number; titular?: string }
+  ): Promise<Familia | null> {
+    const familia = await this.familiaRepository.findOne({
+      where: { familiaId, excluido: false },
+      relations: ["parentes"],
+    });
+
+    if (!familia) {
+      return null;
+    }
+
+    if (data.numeroContrato !== undefined && data.numeroContrato !== null) {
+      familia.numeroContrato = data.numeroContrato;
+    }
+    if (data.titular !== undefined && data.titular !== null) {
+      familia.titular = data.titular;
+    }
+
+    familia.editadoData = new Date();
+    await this.familiaRepository.save(familia);
+
+    return familia;
   }
 }

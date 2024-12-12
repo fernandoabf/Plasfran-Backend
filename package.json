@@ -2,7 +2,8 @@
   "name": "plasfran-backend",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "typeorm": "typeorm-ts-node-esm"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",
@@ -13,14 +14,16 @@
     "install": "^0.13.0",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^0.3.20",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@types/node": "^20.11.17",
+    "@types/node": "^20.17.10",
     "@types/pg": "^8.11.10",
     "@types/uuid": "^10.0.0",
     "prisma": "^6.0.1",
-    "tsx": "^4.7.1"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.1",
+    "typeorm": "^0.3.20",
+    "typescript": "^5.7.2"
   }
 }
