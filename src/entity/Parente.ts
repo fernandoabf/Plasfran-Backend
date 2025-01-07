@@ -39,4 +39,16 @@ export class Parente {
 
   @Column({ type: "boolean", default: false })
   excluido: boolean = false;
+
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  dataCriacao!: Date;
+
+  @Column({ type: "varchar" })
+  statusConta?: string = "inativo";
+
+  @Column({ type: "boolean" })
+  privada?: boolean = false;
+
+  @Column({ type: "varchar", array: true, nullable: true })
+  whitelist?: string[] = [];
 }

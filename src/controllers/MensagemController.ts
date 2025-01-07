@@ -35,7 +35,7 @@ mensagemController.get("/:parenteId", async (ctx) => {
     const mensagens = await mensagemService.getMensagensByParenteId(parenteId);
 
     if (mensagens.length === 0) {
-      return ctx.json({ error: "Nenhuma mensagem foi não encontradas" }, 404);
+      return ctx.json([], 404);
     }
     return ctx.json({
       message: "Mensagens encontradas com sucesso",

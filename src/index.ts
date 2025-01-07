@@ -6,9 +6,11 @@ import { AppDataSource } from "./database/ormconfig.js";
 import familiaRoutes from "./routes/familiaRoutes.js";
 import parenteRoutes from "./routes/parenteRoutes.js";
 import mensagemRoutes from "./routes/mensagemRoutes.ts";
+import { cors } from "hono/cors";
 
 const app = new Hono();
 
+app.use(cors({ origin: "*" }));
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
