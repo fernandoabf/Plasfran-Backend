@@ -9,9 +9,13 @@ export class ParenteService {
   async addParenteToFamiliaByContrato(
     numeroContrato: number,
     nome: string,
-    fotoFalecido: string | undefined,
+    fotoFalecido: string,
     dataNascimento: string,
-    dataObito: string
+    dataObito: string,
+    mensagemObito: string,
+    statusConta: string,
+    privada: boolean,
+    whitelist: string[]
   ): Promise<Parente> {
     const familia = await this.familiaRepository.findOneBy({ numeroContrato });
 
@@ -19,48 +23,45 @@ export class ParenteService {
       throw new Error("Família com o número de contrato não encontrada");
     }
 
-    // Cria o parente com os dados passados
     const parente = this.parenteRepository.create({
       nome,
       fotoFalecido,
       dataNascimento: new Date(dataNascimento),
       dataObito: new Date(dataObito),
       familia,
+      mensagemObito,
+      statusConta,
+      privada,
+      whitelist,
     });
 
-    // Salva o parente no banco de dados e retorna
     return this.parenteRepository.save(parente);
   }
 
   async getParentesByContrato(numeroContrato: number): Promise<Parente[]> {
     // Busca a família pelo número do contrato
     const familia = await this.familiaRepository.findOne({
-      where: { numeroContrato, excluido: false }, // Busca a família com o número do contrato
-      relations: ["parentes"], // Inclui os parentes na consulta
+      where: { numeroContrato, excluido: false },
+      relations: ["parentes"],
     });
 
-    // Se a família não for encontrada, lança um erro
     if (!familia) {
       throw new Error("Família com o número de contrato não encontrada");
     }
 
-    // Retorna todos os parentes associados a essa família que não estão excluidos
     return familia.parentes?.filter((parente) => !parente.excluido) || [];
   }
 
   async getParentesByID(parenteId: string): Promise<Parente> {
-    // Busca o parente pelo ID
     const parente = await this.parenteRepository.findOne({
       where: { parenteId, excluido: false },
       relations: ["familia"], // Inclui a família na consulta
     });
 
-    // Se o parente não for encontrado, lança um erro
     if (!parente) {
       throw new Error("Parente com o ID fornecido não encontrado");
     }
 
-    // Retorna o parente encontrado
     return parente;
   }
 
@@ -72,54 +73,69 @@ export class ParenteService {
       dataNascimento?: string;
       dataObito?: string;
       mensagemObito?: string;
+      statusConta?: string;
+      privada?: boolean;
+      whitelist?: string[];
     }
   ): Promise<Parente> {
-    // Busca o parente pelo ID
     const parente = await this.parenteRepository.findOne({
-      where: { parenteId, excluido: false }, // Busca o parente pelo ID
+      where: { parenteId, excluido: false },
     });
 
-    // Se o parente não for encontrado, lança um erro
     if (!parente) {
       throw new Error("Parente com o ID fornecido não encontrado");
     }
 
-    // Atualiza os dados do parente com os dados passados
     if (data.nome !== undefined && data.nome !== null) {
       parente.nome = data.nome;
     }
+
     if (data.fotoFalecido !== undefined && data.fotoFalecido !== null) {
       parente.fotoFalecido = data.fotoFalecido;
     }
+
+    if (data.statusConta !== undefined && data.statusConta !== null) {
+      parente.statusConta = data.statusConta;
+    }
+
+    if (data.privada !== undefined && data.privada !== null) {
+      parente.privada = data.privada;
+    }
+
+    if (data.whitelist !== undefined && data.whitelist !== null) {
+      parente.whitelist = data.whitelist;
+    }
+
     if (data.dataNascimento !== undefined && data.dataNascimento !== null) {
       parente.dataNascimento = new Date(data.dataNascimento);
     }
+
     if (data.dataObito !== undefined && data.dataObito !== null) {
       parente.dataObito = new Date(data.dataObito);
     }
+
     if (data.mensagemObito !== undefined && data.mensagemObito !== null) {
       parente.mensagemObito = data.mensagemObito;
     }
 
-    // Salva as alterações no banco de dados e retorna o parente atualizado
+    // Adicionando a data de edição
+    parente.editadoData = new Date();
+
+    // Salvando o parente atualizado
     return this.parenteRepository.save(parente);
   }
-
+  
   async deleteParenteById(parenteId: string): Promise<Parente> {
-    // Busca o parente pelo ID
     const parente = await this.parenteRepository.findOne({
       where: { parenteId, excluido: false }, // Busca o parente pelo ID
     });
 
-    // Se o parente não for encontrado, lança um erro
     if (!parente) {
       throw new Error("Parente com o ID fornecido não encontrado");
     }
 
-    // Marca o parente como excluído
     parente.excluido = true;
 
-    // Salva a alteração no banco de dados e retorna o parente excluído
     return this.parenteRepository.save(parente);
   }
 }

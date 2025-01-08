@@ -1,6 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Parente } from "./Parente.ts"; // Manter importação normal
-
 @Entity()
 export class Familia {
   @PrimaryGeneratedColumn("uuid")
@@ -20,6 +19,9 @@ export class Familia {
 
   @Column({ type: "timestamp", nullable: true, default: null })
   editadoData?: Date;
+  
+  @Column({ type: "varchar" })
+  statusConta?: string = "inativo";
 
   @Column({ type: "boolean", default: false })
   excluido: boolean = false;

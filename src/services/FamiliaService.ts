@@ -14,6 +14,7 @@ export class FamiliaService {
       fotoFalecido?: string;
       dataNascimento: string;
       dataObito: string;
+      mensagemObito: string;
     }[]
   ): Promise<Familia> {
     return AppDataSource.transaction(async (transactionManager) => {
@@ -30,6 +31,7 @@ export class FamiliaService {
             fotoFalecido: parenteData.fotoFalecido,
             dataNascimento: new Date(parenteData.dataNascimento),
             dataObito: new Date(parenteData.dataObito),
+            mensagemObito: parenteData.mensagemObito,
             familia: savedFamilia,
           })
         );

@@ -15,8 +15,7 @@ interface FamiliaRequest {
     fotoFalecido?: string;
     dataNascimento: string;
     dataObito: string;
-    editadoData?: string;
-    excluido: boolean;
+    mensagemObito: string;
   }[];
 }
 
