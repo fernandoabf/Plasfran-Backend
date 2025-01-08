@@ -5,6 +5,6 @@ import familiaController from "../controllers/FamiliaController.js";
 const familiaRoutes = new Hono();
 
 // Integrando as rotas de família
-familiaRoutes.route("/", familiaController);
+familiaRoutes.route("/familia", familiaController);
 
 export default familiaRoutes;
