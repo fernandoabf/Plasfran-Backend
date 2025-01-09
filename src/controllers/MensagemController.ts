@@ -29,12 +29,12 @@ mensagemController.get("/:parenteId", async (ctx) => {
 mensagemController.post("/:parenteId", async (ctx) => {
   const parenteId = ctx.req.param("parenteId");
   const mensagemData = await ctx.req.json();
-
   try {
     const mensagem = await mensagemService.addMensagemToParente(
       parenteId,
       mensagemData.nome,
-      mensagemData.mensagem
+      mensagemData.mensagem,
+      mensagemData.email
     );
 
     return ctx.json({

@@ -25,6 +25,6 @@ export class Mensagem {
   @Column({ type: "boolean", default: false })
   excluido?: boolean;
 
-  @ManyToOne(() => User, (usuario) => usuario.mensagem)
-  owner!: User;
+  @ManyToOne(() => User, (user) => user.mensagem)
+  owner?: User;
 }

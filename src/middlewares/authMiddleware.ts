@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import { AppDataSource } from "../database/ormconfig.ts";
 import { User } from "../entity/User.ts";
 import { Employee } from "../entity/Employee.ts";
-import { Equal, FindOperator } from "typeorm";
 import { Mensagem } from "../entity/Mensagem.ts";
 
 dotenv.config();

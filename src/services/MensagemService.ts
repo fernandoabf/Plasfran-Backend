@@ -1,6 +1,7 @@
 import { AppDataSource } from "../database/ormconfig.ts";
 import { Mensagem } from "../entity/Mensagem.ts";
 import { Parente } from "../entity/Parente.ts";
+import { User } from "../entity/User.ts";
 
 export class MensagemService {
   private parenteRepository = AppDataSource.getRepository(Parente);
@@ -9,14 +10,21 @@ export class MensagemService {
   async addMensagemToParente(
     parenteId: string,
     nome: string,
-    mensagem: string
+    mensagem: string,
+    email: string
   ): Promise<Mensagem> {
     const parente = await this.parenteRepository.findOne({
       where: { parenteId, excluido: false },
     });
+    const owner = await User.findOneBy({
+      email,
+    });
 
     if (!parente) {
       throw new Error("Parente com o ID fornecido não encontrado");
+    }
+    if (!owner) {
+      throw new Error("Usuário com o email fornecido não encontrado");
     }
 
     const mensagemEntity = this.mensagemRepository.create({
@@ -24,6 +32,7 @@ export class MensagemService {
       mensagem,
       sendAt: new Date(),
       parente,
+      owner,
     });
 
     return this.mensagemRepository.save(mensagemEntity);
