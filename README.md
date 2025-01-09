@@ -1,75 +1,217 @@
-# Sistema de Gerenciamento de Famílias e Falecidos
+# API Documentation
 
-Este sistema permite gerenciar famílias e falecidos de maneira simples e eficiente. Ele oferece funcionalidades para criar, editar e remover famílias e falecidos, além de possibilitar o envio de mensagens de recordação para os falecidos.
+## Overview
 
-## Funcionalidades do Sistema
+Esta API gerencia dados relacionados a famílias, parentes, mensagens e autenticação. Abaixo estão descritos todos os endpoints disponíveis, incluindo suas funcionalidades, entradas, saídas e possíveis erros.
 
-### 1. Criar uma Família
+---
 
-A funcionalidade de criar uma família permite ao usuário adicionar uma nova família ao sistema. Uma família possui um número de contrato único, um titular (nome do responsável) e uma lista de parentes (falecidos).
+## Endpoints
 
-- **Rota:** `POST /familia`
-- **Descrição:** Cria uma nova família com um número de contrato, titular e lista de parentes.
-- **Corpo da Requisição (JSON):**
+### Autenticação
+
+#### POST `/auth/login`
+
+Realiza o login de um usuário.
+
+**Requisição:**
 
 ```json
 {
-  "numero_contrato": 12345,
-  "titular": "João Silva",
+  "email": "user@example.com",
+  "password": "password123"
+}
+```
+
+**Resposta de sucesso (200):**
+
+```json
+{
+  "accessToken": "<JWT Token>",
+  "refreshToken": "<Refresh Token>"
+}
+```
+
+**Possíveis erros:**
+
+- 401: Credenciais inválidas.
+- 500: Erro interno do servidor.
+
+#### POST `/auth/google`
+
+Realiza o login de um usuário com Google.
+
+**Requisição:**
+
+```json
+{
+  "idToken": "<Google ID Token>"
+}
+```
+
+**Resposta de sucesso (200):**
+
+```json
+{
+  "accessToken": "<JWT Token>",
+  "refreshToken": "<Refresh Token>"
+}
+```
+
+**Possíveis erros:**
+
+- 401: Token inválido.
+- 500: Erro interno do servidor.
+
+#### POST `/auth/register`
+
+Registra um novo funcionário (apenas administradores podem usar este endpoint).
+
+**Requisição:**
+
+```json
+{
+  "email": "employee@example.com",
+  "password": "password123",
+  "name": "John Doe",
+  "role": "employee"
+}
+```
+
+**Resposta de sucesso (201):**
+
+```json
+{
+  "message": "Funcionário registrado com sucesso."
+}
+```
+
+**Possíveis erros:**
+
+- 403: Apenas administradores podem criar contas.
+- 400: Dados inválidos.
+- 500: Erro interno do servidor.
+
+#### POST `/auth/refresh-token`
+
+Atualiza tokens de autenticação.
+
+**Requisição:**
+
+```json
+{
+  "refreshToken": "<Refresh Token>"
+}
+```
+
+**Resposta de sucesso (200):**
+
+```json
+{
+  "accessToken": "<Novo JWT Token>",
+  "refreshToken": "<Mesmo Refresh Token>"
+}
+```
+
+**Possíveis erros:**
+
+- 401: Token inválido.
+- 500: Erro interno do servidor.
+
+---
+
+### Família
+
+#### GET `/api/familia/:numeroContrato`
+
+Busca uma família pelo número do contrato.
+
+**Requisição:**
+Nenhum corpo necessário.
+
+**Resposta de sucesso (200):**
+
+```json
+{
+  "message": "Família encontrada com sucesso",
+  "familia": { ...dados da família... }
+}
+```
+
+**Possíveis erros:**
+
+- 400: Número de contrato inválido.
+- 404: Família não encontrada.
+- 500: Erro interno do servidor.
+
+#### POST `/api/familia`
+
+Cria uma nova família.
+
+**Requisição:**
+
+```json
+{
+  "numeroContrato": 12345,
+  "titular": "John Doe",
+  "statusConta": "ativo",
   "parentes": [
     {
-      "nome": "Maria Silva",
-      "fotoFalecido": "url_da_foto",
-      "dataNascimento": "1980-05-10",
-      "dataObito": "2022-04-15"
+      "nome": "Jane Doe",
+      "dataNascimento": "2000-01-01",
+      "dataObito": "2020-01-01",
+      "mensagemObito": "Sentiremos sua falta."
     }
   ]
 }
 ```
 
-- **Resposta (Sucesso):**
+**Resposta de sucesso (201):**
 
 ```json
 {
   "message": "Família criada com sucesso",
-  "familiaId": "UUID_da_familia"
+  "familiaId": 1
 }
 ```
 
-- **Resposta (Erro):**
+**Possíveis erros:**
+
+- 400: Dados inválidos.
+- 500: Erro interno do servidor.
+
+#### PATCH `/api/familia/:id`
+
+Atualiza os dados de uma família.
+
+**Requisição:**
 
 ```json
 {
-  "error": "Erro ao criar a família"
+  "titular": "Jane Doe"
 }
 ```
 
-### 2. Remover ou Editar Dados de uma Família
-
-Permite editar ou remover os dados da família, como o titular ou o número de contrato.
-
-- **Rota:** `PATCH /familia/{familiaId}`
-- **Descrição:** Edita os dados de uma família existente.
-- **Corpo da Requisição (JSON):**
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "numero_contrato": 12346,
-  "titular": "Carlos Oliveira"
+  "message": "Família atualizada com sucesso",
+  "familia": { ...dados atualizados... }
 }
 ```
 
-- **Resposta (Sucesso):**
+**Possíveis erros:**
 
-```json
-{
-  "message": "Dados da família atualizados com sucesso"
-}
-```
+- 400: Dados inválidos.
+- 404: Família não encontrada.
+- 500: Erro interno do servidor.
 
-- **Rota:** `DELETE /familia/{familiaId}`
-- **Descrição:** Remove uma família do sistema.
-- **Resposta (Sucesso):**
+#### DELETE `/api/familia/:numeroContrato`
+
+Remove uma família pelo número do contrato.
+
+**Resposta de sucesso (200):**
 
 ```json
 {
@@ -77,214 +219,233 @@ Permite editar ou remover os dados da família, como o titular ou o número de c
 }
 ```
 
-### 3. Adicionar Falecidos (Parentes) à Família
+**Possíveis erros:**
 
-Permite adicionar novos falecidos (parentes) à família.
+- 400: Número de contrato inválido.
+- 404: Família não encontrada.
+- 500: Erro interno do servidor.
 
-- **Rota:** `POST /familia/{familiaId}/parente`
-- **Descrição:** Adiciona um novo parente (falecido) à família.
-- **Corpo da Requisição (JSON):**
+---
+
+### Parentes
+
+#### GET `/api/parente/contrato/:numeroContrato`
+
+Busca parentes associados a uma família pelo número de contrato.
+
+**Requisição:**
+Nenhum corpo necessário.
+
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "nome": "Ana Costa",
-  "fotoFalecido": "url_da_foto",
-  "dataNascimento": "1955-07-20",
-  "dataObito": "2021-11-05"
+  "message": "Parentes encontrados com sucesso",
+  "parentes": [ ...dados dos parentes... ]
 }
 ```
 
-- **Resposta (Sucesso):**
+**Possíveis erros:**
+
+- 400: Número de contrato inválido.
+- 500: Erro interno do servidor.
+
+#### GET `/api/parente/:parenteID`
+
+Busca um parente pelo ID.
+
+**Requisição:**
+Nenhum corpo necessário.
+
+**Resposta de sucesso (200):**
+
+```json
+{
+  "message": "Parente encontrado com sucesso",
+  "parente": { ...dados do parente... }
+}
+```
+
+**Possíveis erros:**
+
+- 404: Parente não encontrado.
+- 500: Erro interno do servidor.
+
+#### POST `/api/parente/:numeroContrato`
+
+Adiciona um parente a uma família pelo número de contrato.
+
+**Requisição:**
+
+```json
+{
+  "nome": "John Doe",
+  "dataNascimento": "1980-01-01",
+  "dataObito": "2020-01-01",
+  "mensagemObito": "Sempre será lembrado.",
+  "statusConta": "ativo",
+  "privada": false,
+  "whitelist": ["user1@example.com", "user2@example.com"]
+}
+```
+
+**Resposta de sucesso (201):**
 
 ```json
 {
   "message": "Parente adicionado com sucesso",
-  "parenteId": "UUID_do_parente"
+  "parenteId": 1
 }
 ```
 
-- **Resposta (Erro):**
+**Possíveis erros:**
+
+- 400: Dados inválidos.
+- 500: Erro interno do servidor.
+
+#### PATCH `/api/parente/:parenteID`
+
+Atualiza os dados de um parente pelo ID.
+
+**Requisição:**
 
 ```json
 {
-  "error": "Erro ao adicionar o parente"
+  "nome": "Jane Doe"
 }
 ```
 
-### 4. Remover ou Editar Dados de um Parente (Falecido)
-
-Permite editar ou remover os dados de um parente (falecido), como nome, foto, data de nascimento e data de óbito.
-
-- **Rota:** `PATCH /parente/{parenteId}`
-- **Descrição:** Edita os dados de um parente.
-- **Corpo da Requisição (JSON):**
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "nome": "Ana Costa",
-  "fotoFalecido": "nova_url_da_foto",
-  "dataNascimento": "1955-07-20",
-  "dataObito": "2021-10-25"
+  "message": "Parente editado com sucesso",
+  "parenteId": 1
 }
 ```
 
-- **Resposta (Sucesso):**
+**Possíveis erros:**
+
+- 400: Dados inválidos.
+- 404: Parente não encontrado.
+- 500: Erro interno do servidor.
+
+#### DELETE `/api/parente/:parenteID`
+
+Remove um parente pelo ID.
+
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "message": "Dados do parente atualizados com sucesso"
+  "message": "Parente deletado com sucesso"
 }
 ```
 
-- **Rota:** `DELETE /parente/{parenteId}`
-- **Descrição:** Remove um parente da família.
-- **Resposta (Sucesso):**
+**Possíveis erros:**
+
+- 404: Parente não encontrado.
+- 500: Erro interno do servidor.
+
+---
+
+### Mensagens
+
+#### GET `/api/mensagem/:parenteId`
+
+Busca mensagens associadas a um parente pelo ID.
+
+**Requisição:**
+Nenhum corpo necessário.
+
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "message": "Parente removido com sucesso"
+  "message": "Mensagens encontradas com sucesso",
+  "mensagens": [ ...dados das mensagens... ]
 }
 ```
 
-### 5. Atribuir uma Mensagem a um Falecido
+**Possíveis erros:**
 
-Permite a um usuário enviar uma mensagem para um falecido da família.
+- 404: Nenhuma mensagem encontrada.
+- 500: Erro interno do servidor.
 
-- **Rota:** `POST /parente/{parenteId}/mensagem`
-- **Descrição:** Adiciona uma mensagem a um falecido (parente).
-- **Corpo da Requisição (JSON):**
+#### POST `/api/mensagem/:parenteId`
+
+Adiciona uma mensagem a um parente pelo ID.
+
+**Requisição:**
 
 ```json
 {
-  "usuarioId": "UUID_do_usuario",
-  "nomeUsuario": "João Silva",
-  "mensagem": "Saudades eternas",
-  "dataEnvio": "2024-12-05T10:00:00Z"
+  "nome": "John Doe",
+  "mensagem": "Sentiremos sua falta."
 }
 ```
 
-- **Resposta (Sucesso):**
+**Resposta de sucesso (201):**
 
 ```json
 {
-  "message": "Mensagem enviada com sucesso",
-  "mensagemId": "UUID_da_mensagem"
+  "message": "Mensagem adicionada com sucesso",
+  "mensagemId": 1
 }
 ```
 
-- **Resposta (Erro):**
+**Possíveis erros:**
+
+- 400: Dados inválidos.
+- 500: Erro interno do servidor.
+
+#### PATCH `/api/mensagem/:mensagemId`
+
+Atualiza o conteúdo de uma mensagem pelo ID.
+
+**Requisição:**
 
 ```json
 {
-  "error": "Erro ao enviar a mensagem"
+  "mensagem": "Nova mensagem de homenagem."
 }
 ```
 
-### 6. Remover uma Mensagem de um Falecido
-
-Permite remover uma mensagem que foi atribuída a um falecido, caso o usuário tenha permissões.
-
-- **Rota:** `DELETE /parente/{parenteId}/mensagem/{mensagemId}`
-- **Descrição:** Remove uma mensagem de um falecido.
-- **Resposta (Sucesso):**
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "message": "Mensagem removida com sucesso"
+  "message": "Mensagem editada com sucesso",
+  "mensagemId": 1,
+  "mensagemEditada": "Nova mensagem de homenagem."
 }
 ```
 
-### 7. Remover ou Editar Mensagens de um Falecido (Somente Usuário Remetente)
+**Possíveis erros:**
 
-Permite que o usuário que enviou a mensagem edite ou remova suas próprias mensagens.
+- 400: Dados inválidos.
+- 404: Mensagem não encontrada.
+- 500: Erro interno do servidor.
 
-- **Rota:** `PATCH /parente/{parenteId}/mensagem/{mensagemId}`
-- **Descrição:** Edita uma mensagem enviada pelo usuário.
-- **Corpo da Requisição (JSON):**
+#### DELETE `/api/mensagem/:mensagemId`
+
+Remove uma mensagem pelo ID.
+
+**Resposta de sucesso (200):**
 
 ```json
 {
-  "mensagem": "Nova mensagem editada"
+  "message": "Mensagem deletada com sucesso"
 }
 ```
 
-- **Resposta (Sucesso):**
+**Possíveis erros:**
 
-```json
-{
-  "message": "Mensagem editada com sucesso"
-}
-```
+- 404: Mensagem não encontrada.
+- 500: Erro interno do servidor.
 
-- **Rota:** `DELETE /parente/{parenteId}/mensagem/{mensagemId}`
-- **Descrição:** Remove uma mensagem enviada pelo usuário.
-- **Resposta (Sucesso):**
+---
 
-```json
-{
-  "message": "Mensagem removida com sucesso"
-}
-```
+## Observações
 
-### 8. Buscar Família por Número de Contrato
-
-Permite que o usuário busque informações de uma família através do número de contrato.
-
-- **Rota:** `GET /familia/contrato/{numeroContrato}`
-- **Descrição:** Busca uma família pelo número de contrato.
-- **Resposta (Sucesso):**
-
-```json
-{
-  "numero_contrato": 12345,
-  "titular": "João Silva",
-  "parentes": [
-    {
-      "nome": "Maria Silva",
-      "fotoFalecido": "url_da_foto",
-      "dataNascimento": "1980-05-10",
-      "dataObito": "2022-04-15"
-    }
-  ]
-}
-```
-
-- **Resposta (Erro):**
-
-```json
-{
-  "error": "Família não encontrada"
-}
-```
-
-### 9. Buscar Parente pelo UUID
-
-Permite que o usuário busque um parente específico na família através do UUID, retornando as informações detalhadas, incluindo as mensagens enviadas.
-
-- **Rota:** `GET /parente/{parenteId}`
-- **Descrição:** Busca um parente (falecido) pelo UUID.
-- **Resposta (Sucesso):**
-
-```json
-{
-  "nome": "Maria Silva",
-  "fotoFalecido": "url_da_foto",
-  "dataNascimento": "1980-05-10",
-  "dataObito": "2022-04-15",
-  "mensagens": [
-    {
-      "nomeUsuario": "João Silva",
-      "mensagem": "Saudades eternas",
-      "dataEnvio": "2022-05-01T10:00:00Z"
-    }
-  ]
-}
-```
-
-- **Resposta (Erro):**
-
-```json
-{
-  "error": "Parente não encontrado"
-}
-```
+- Todas as rotas protegidas exigem autenticação com um token JWT válido.
