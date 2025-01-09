@@ -1,39 +1,58 @@
 import jwt from "jsonwebtoken";
 import type { Context } from "hono";
 import dotenv from "dotenv";
-
 import { AppDataSource } from "../database/ormconfig.ts";
 import { User } from "../entity/User.ts";
-import { Mensagem } from "../entity/Mensagem.ts"; // Certifique-se de importar o modelo de Message
 import { Employee } from "../entity/Employee.ts";
+import { Mensagem } from "../entity/Mensagem.ts";
 
 dotenv.config();
 
 export const authenticateToken = async (c: Context, next: Function) => {
+  // Verifica se o header de Authorization foi fornecido
   const authHeader = c.req.header("Authorization");
-  const token = authHeader?.split(" ")[1];
+  if (!authHeader) {
+    return c.json({ error: "Token não fornecido" }, 401);
+  }
 
+  const token = authHeader.split(" ")[1];
   if (!token) return c.json({ error: "Token não fornecido" }, 401);
 
   try {
+    // Verifica se a chave JWT_SECRET está definida
     if (!process.env.JWT_SECRET) {
       return c.json({ error: "JWT_SECRET não definido" }, 500);
     }
 
-    const payload = jwt.verify(token, process.env.JWT_SECRET) as { id: number };
-    const user = await User.findOne({ where: { id: payload.id } });
+    // Decodifica o payload do token
+    const payload = jwt.verify(token, process.env.JWT_SECRET) as { id: string };
 
+    // Verifica se o usuário existe na tabela User
+    const user = await AppDataSource.getRepository(User).findOne({
+      where: { id: payload.id },
+    });
+
+    // Se o usuário não for encontrado, tenta buscar o employee
     if (!user) {
-      const employee = await Employee.findOne({ where: { id: payload.id } });
-      if (!employee) return c.json({ error: "Usuário não encontrado" }, 404);
-      c.set("user", employee); // Salva o employee no contexto
+      const employee = await AppDataSource.getRepository(Employee).findOne({
+        where: { id: payload.id },
+      });
+
+      if (!employee) {
+        return c.json({ error: "Usuário não encontrado" }, 404);
+      }
+
+      // Se o employee for encontrado, armazena no contexto
+      c.set("user", employee);
     } else {
-      c.set("user", user); // Salva o usuário no contexto
+      // Se o usuário for encontrado, armazena no contexto
+      c.set("user", user);
     }
 
     await next();
-  } catch (error) {
-    return c.json({ error: "Token inválido" }, 403);
+  } catch (error: any) {
+    // Se ocorrer um erro ao verificar ou decodificar o token
+    return c.json({ error: "Token inválido", details: error.message }, 403);
   }
 };
 
@@ -69,7 +88,7 @@ export const canEditOrDeleteMessage = async (c: Context, next: Function) => {
 
 export const isAdminOrEmployee = async (c: Context, next: Function) => {
   const user = c.get("user");
-
+  console.log(user);
   if (!user || (user.role !== "admin" && user.role !== "employee")) {
     return c.json({ error: "Acesso não autorizado" }, 403);
   }
