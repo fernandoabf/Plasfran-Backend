@@ -64,7 +64,7 @@ export const registerEmployee = async (
   email: string,
   password: string,
   name: string,
-  role: string = "user"
+  role: string = "employee"
 ) => {
   const employeeRepository = AppDataSource.getRepository(Employee);
 
@@ -163,6 +163,7 @@ export const loginWithGoogle = async (idToken: string) => {
  */
 export const refreshTokens = async (refreshToken: string) => {
   const userRepository = AppDataSource.getRepository(User);
+  const employeeRepository = AppDataSource.getRepository(Employee);
 
   try {
     // Verificar se o Refresh Token é válido
@@ -176,7 +177,14 @@ export const refreshTokens = async (refreshToken: string) => {
       where: { id: (decoded as jwt.JwtPayload).id },
     });
 
-    if (!user || user.refreshToken !== refreshToken) {
+    const employee = await employeeRepository.findOne({
+      where: { id: (decoded as jwt.JwtPayload).id },
+    });
+
+    if (
+      (!user || user.refreshToken !== refreshToken) &&
+      (!employee || employee.refreshToken !== refreshToken)
+    ) {
       return {
         success: false,
         message: "Refresh Token inválido ou não encontrado",
@@ -185,9 +193,9 @@ export const refreshTokens = async (refreshToken: string) => {
 
     // Gerar um novo Access Token
     const newAccessToken = generateAccessToken({
-      id: user.id,
-      email: user.email,
-      role: user.role,
+      id: user ? user.id : employee!.id,
+      email: user ? user.email : employee!.email,
+      role: user ? user.role : employee!.role,
     });
 
     // Não gerar um novo Refresh Token, apenas retornar o mesmo

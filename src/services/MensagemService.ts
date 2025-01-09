@@ -1,12 +1,10 @@
 import { AppDataSource } from "../database/ormconfig.ts";
 import { Mensagem } from "../entity/Mensagem.ts";
 import { Parente } from "../entity/Parente.ts";
-import { User } from "../entity/User.ts";
 
 export class MensagemService {
   private parenteRepository = AppDataSource.getRepository(Parente);
   private mensagemRepository = AppDataSource.getRepository(Mensagem);
-  private userRepository = AppDataSource.getRepository(User);
 
   async addMensagemToParente(
     parenteId: string,

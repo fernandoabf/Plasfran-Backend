@@ -9,8 +9,8 @@ import { Mensagem } from "./Mensagem";
 
 @Entity("user") // Nome da tabela
 export class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id?: number;
+  @PrimaryGeneratedColumn('uuid')
+  id?: string;
 
   @Column("varchar", { unique: true })
   email?: string;

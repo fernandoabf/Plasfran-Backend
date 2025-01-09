@@ -14,7 +14,6 @@ const app = new Hono();
 
 app.use(cors({ origin: "*" }));
 
-
 app.route("/api", protectedRoutes);
 
 app.route("/auth", authRoutes);
