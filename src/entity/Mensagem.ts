@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Parente } from "./Parente.ts";
+import { User } from "./User.ts"; // Importe o modelo de usuário
 
 @Entity()
 export class Mensagem {
@@ -22,5 +23,8 @@ export class Mensagem {
   editadoData?: Date;
 
   @Column({ type: "boolean", default: false })
-  excluido: boolean = false;
+  excluido?: boolean;
+
+  @ManyToOne(() => User, (usuario) => usuario.mensagem)
+  owner!: User;
 }

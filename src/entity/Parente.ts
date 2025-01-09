@@ -38,16 +38,16 @@ export class Parente {
   editadoData?: Date;
 
   @Column({ type: "boolean", default: false })
-  excluido: boolean = false;
+  excluido?: boolean;
 
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   dataCriacao!: Date;
 
-  @Column({ type: "varchar" })
-  statusConta?: string = "inativo";
+  @Column({ type: "varchar", default: "inativo" })
+  statusConta?: string;
 
-  @Column({ type: "boolean" })
-  privada?: boolean = false;
+  @Column({ type: "boolean", default: false })
+  privada?: boolean;
 
   @Column({ type: "varchar", array: true, nullable: true })
   whitelist?: string[] = [];

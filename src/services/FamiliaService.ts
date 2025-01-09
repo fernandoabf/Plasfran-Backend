@@ -9,6 +9,7 @@ export class FamiliaService {
   async createFamiliaWithOptionalParentes(
     numeroContrato: number,
     titular: string,
+    statusConta: string,
     parentesData?: {
       nome: string;
       fotoFalecido?: string;
@@ -33,6 +34,7 @@ export class FamiliaService {
             dataObito: new Date(parenteData.dataObito),
             mensagemObito: parenteData.mensagemObito,
             familia: savedFamilia,
+            statusConta,
           })
         );
 

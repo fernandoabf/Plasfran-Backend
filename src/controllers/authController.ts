@@ -3,6 +3,7 @@ import {
   loginUser,
   loginWithGoogle,
   refreshTokens,
+  registerEmployee,
 } from "../services/authService.ts";
 
 export const loginController = async (c: Context) => {
@@ -50,4 +51,29 @@ export const refreshTokensController = async (c: Context) => {
     accessToken: result.accessToken, // Novo Access Token
     refreshToken: result.refreshToken, // O mesmo Refresh Token
   });
+};
+
+export const registerEmployeeController = async (c: Context) => {
+  const user = c.get("user"); // Obtém o usuário autenticado a partir do contexto
+
+  // Verifica se o usuário tem permissão de admin
+  if (user.role !== "admin") {
+    return c.json(
+      {
+        error:
+          "Acesso não autorizado. Apenas administradores podem criar contas.",
+      },
+      403
+    );
+  }
+
+  const { email, password, name, role } = await c.req.json();
+
+  const result = await registerEmployee(email, password, name, role);
+
+  if (!result.success) {
+    return c.json({ error: result.message }, 400);
+  }
+
+  return c.json({ message: result.message }, 201);
 };

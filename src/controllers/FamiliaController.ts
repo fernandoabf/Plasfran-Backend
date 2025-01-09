@@ -1,15 +1,17 @@
 import { Hono } from "hono";
 import { FamiliaService } from "../services/FamiliaService.js";
-import { QueryFailedError } from "typeorm";
+import { isAdminOrEmployee } from "../middlewares/authMiddleware.js"; // Middleware para admin ou employee
 
 const familiaController = new Hono();
 const familiaService = new FamiliaService();
 
+// Interface para os dados da família
 interface FamiliaRequest {
   numeroContrato: number;
   titular: string;
   editadoData?: string;
   excluido: boolean;
+  statusConta: string;
   parentes?: {
     nome: string;
     fotoFalecido?: string;
@@ -19,7 +21,6 @@ interface FamiliaRequest {
   }[];
 }
 
-// Buscar uma família pelo número do contrato
 familiaController.get("/:numeroContrato", async (ctx) => {
   try {
     const numeroContrato = parseInt(ctx.req.param("numeroContrato"));
@@ -40,7 +41,10 @@ familiaController.get("/:numeroContrato", async (ctx) => {
   }
 });
 
-// Criar uma nova família
+// Rotas POST, PATCH, DELETE são protegidas pelo middleware de autenticação e autorização
+familiaController.use("/*", isAdminOrEmployee); // Protege essas rotas para admin ou employee
+
+// Criar uma família
 familiaController.post("/", async (ctx) => {
   try {
     const familiaData: FamiliaRequest = await ctx.req.json();
@@ -91,7 +95,8 @@ familiaController.post("/", async (ctx) => {
     const familia = await familiaService.createFamiliaWithOptionalParentes(
       familiaData.numeroContrato,
       familiaData.titular,
-      familiaData.parentes
+      familiaData.statusConta,
+      familiaData.parentes || []
     );
 
     return ctx.json({

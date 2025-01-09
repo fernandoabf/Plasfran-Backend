@@ -13,9 +13,8 @@ dotenv.config();
 const app = new Hono();
 
 app.use(cors({ origin: "*" }));
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
+
+
 app.route("/api", protectedRoutes);
 
 app.route("/auth", authRoutes);

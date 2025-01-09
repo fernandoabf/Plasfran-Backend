@@ -1,19 +1,15 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  BaseEntity,
-  OneToMany,
-} from "typeorm";
-import { Mensagem } from "./Mensagem";
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
-@Entity("user") // Nome da tabela
-export class User extends BaseEntity {
+@Entity("employee") // Nome da tabela
+export class Employee extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number;
 
   @Column("varchar", { unique: true })
   email?: string;
+
+  @Column("varchar")
+  password?: string;
 
   @Column("varchar", { default: "user" })
   role?: string;
@@ -24,20 +20,14 @@ export class User extends BaseEntity {
   @Column("varchar", { nullable: true })
   refreshToken?: string;
 
-  @Column("boolean", { default: false })
-  excluido?: boolean;
-
-  @Column("boolean", { nullable: true, default: false })
-  bloqueado?: boolean;
-
   @Column({ type: "varchar", default: "inativo" })
   statusConta?: string;
 
+  @Column({ type: "boolean", default: false })
+  excluido?: boolean;
+
   @Column("timestamptz", { default: () => "NOW()" })
   createdAt!: Date;
-
-  @OneToMany(() => Mensagem, (mensagem) => mensagem.owner)
-  mensagem?: Mensagem[];
 
   @Column("timestamptz", { default: () => "NOW()", onUpdate: "NOW()" })
   updatedAt!: Date;

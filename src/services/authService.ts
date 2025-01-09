@@ -1,8 +1,10 @@
 import { AppDataSource } from "../database/ormconfig.js";
 import { User } from "../entity/User.ts";
-import jwt from "jsonwebtoken";
+import { Employee } from "../entity/Employee.ts";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwtUtil.js"; // Importando os métodos de geração dos tokens
 import { OAuth2Client } from "google-auth-library";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -13,7 +15,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
  * Função para login padrão com email e senha.
  */
 export const loginUser = async (email: string, password: string) => {
-  const userRepository = AppDataSource.getRepository(User);
+  const userRepository = AppDataSource.getRepository(Employee);
 
   try {
     // Verificar se o usuário existe no banco de dados
@@ -24,7 +26,11 @@ export const loginUser = async (email: string, password: string) => {
     }
 
     // Verificar se a senha está correta (com bcrypt ou outro método de hash se necessário)
-    const isPasswordValid = user.password === password;
+    if (!user.password || !(await bcrypt.compare(password, user.password))) {
+      return { success: false, message: "Senha incorreta" };
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return { success: false, message: "Senha incorreta" };
@@ -54,6 +60,44 @@ export const loginUser = async (email: string, password: string) => {
   }
 };
 
+export const registerEmployee = async (
+  email: string,
+  password: string,
+  name: string,
+  role: string = "user"
+  
+) => {
+  const employeeRepository = AppDataSource.getRepository(Employee);
+
+  try {
+    // Verificar se o e-mail já está em uso
+    const existingEmployee = await employeeRepository.findOne({
+      where: { email },
+    });
+
+    if (existingEmployee) {
+      return { success: false, message: "E-mail já cadastrado" };
+    }
+
+    // Hash da senha antes de salvar no banco
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Criar e salvar o novo Employee
+    const newEmployee = employeeRepository.create({
+      email,
+      password: hashedPassword,
+      name,
+      role,
+    });
+
+    await employeeRepository.save(newEmployee);
+
+    return { success: true, message: "Funcionário registrado com sucesso" };
+  } catch (error) {
+    console.error("Erro ao registrar funcionário:", error);
+    return { success: false, message: "Erro ao registrar funcionário" };
+  }
+};
 /**
  * Função para login com Google usando o ID Token.
  */
@@ -86,7 +130,7 @@ export const loginWithGoogle = async (idToken: string) => {
       user = userRepository.create({
         email,
         name,
-        role: "user", // Você pode atribuir outros papéis, conforme necessário
+        role: "user",
       });
       await userRepository.save(user);
     }
