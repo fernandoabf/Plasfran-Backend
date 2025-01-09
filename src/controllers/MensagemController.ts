@@ -1,33 +1,11 @@
 import { Hono } from "hono";
 import { MensagemService } from "../services/MensagemService.ts";
+import { canEditOrDeleteMessage } from "../middlewares/authMiddleware.ts";
 
 const mensagemController = new Hono();
 const mensagemService = new MensagemService();
 
-// Rota para adicionar uma mensagem a um parente pelo ID
-mensagemController.post("/:parenteId", async (ctx) => {
-  const parenteId = ctx.req.param("parenteId");
-
-  const mensagemData = await ctx.req.json();
-
-  try {
-    const mensagem = await mensagemService.addMensagemToParente(
-      parenteId,
-      mensagemData.nome,
-      mensagemData.mensagem
-    );
-
-    return ctx.json({
-      message: "Mensagem adicionada com sucesso",
-      mensagemId: mensagem.mensagemId,
-    });
-  } catch (error: any) {
-    console.error("Erro ao adicionar mensagem:", error);
-    return ctx.json({ error: error.message }, 400);
-  }
-});
-
-// Rota para buscar as mensagens de um parente pelo ID
+// Rota para buscar mensagens de um parente pelo ID
 mensagemController.get("/:parenteId", async (ctx) => {
   const parenteId = ctx.req.param("parenteId");
 
@@ -47,7 +25,31 @@ mensagemController.get("/:parenteId", async (ctx) => {
   }
 });
 
-// Rota para deletar uma mensagem pelo ID
+// Rota para adicionar uma mensagem a um parente pelo ID
+mensagemController.post("/:parenteId", async (ctx) => {
+  const parenteId = ctx.req.param("parenteId");
+  const mensagemData = await ctx.req.json();
+
+  try {
+    const mensagem = await mensagemService.addMensagemToParente(
+      parenteId,
+      mensagemData.nome,
+      mensagemData.mensagem
+    );
+
+    return ctx.json({
+      message: "Mensagem adicionada com sucesso",
+      mensagemId: mensagem.mensagemId,
+    });
+  } catch (error: any) {
+    console.error("Erro ao adicionar mensagem:", error);
+    return ctx.json({ error: error.message }, 400);
+  }
+});
+
+mensagemController.use("/*", canEditOrDeleteMessage);
+
+// Rota para editar uma mensagem pelo ID
 mensagemController.delete("/:mensagemId", async (ctx) => {
   const mensagemId = ctx.req.param("mensagemId");
 
@@ -83,4 +85,5 @@ mensagemController.patch("/:mensagemId", async (ctx) => {
     return ctx.json({ error: error.message }, 400);
   }
 });
+
 export default mensagemController;

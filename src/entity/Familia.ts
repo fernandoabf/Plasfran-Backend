@@ -19,10 +19,10 @@ export class Familia {
 
   @Column({ type: "timestamp", nullable: true, default: null })
   editadoData?: Date;
-  
-  @Column({ type: "varchar" })
-  statusConta?: string = "inativo";
+
+  @Column({ type: "varchar", default: "inativo" })
+  statusConta?: string;
 
   @Column({ type: "boolean", default: false })
-  excluido: boolean = false;
+  excluido?: boolean;
 }

@@ -1,10 +1,12 @@
 import { AppDataSource } from "../database/ormconfig.ts";
 import { Mensagem } from "../entity/Mensagem.ts";
 import { Parente } from "../entity/Parente.ts";
+import { User } from "../entity/User.ts";
 
 export class MensagemService {
   private parenteRepository = AppDataSource.getRepository(Parente);
   private mensagemRepository = AppDataSource.getRepository(Mensagem);
+  private userRepository = AppDataSource.getRepository(User);
 
   async addMensagemToParente(
     parenteId: string,
@@ -38,6 +40,18 @@ export class MensagemService {
       throw new Error("Parente com o ID fornecido não encontrado");
     }
     return parente.mensagens?.filter((mensagem) => !mensagem.excluido) ?? [];
+  }
+
+  async getMensagemById(mensagemId: string): Promise<Mensagem> {
+    const mensagem = await this.mensagemRepository.findOne({
+      where: { mensagemId, excluido: false },
+    });
+
+    if (!mensagem) {
+      throw new Error("Mensagem com o ID fornecido não encontrada");
+    }
+
+    return mensagem;
   }
 
   async deleteMensagemById(mensagemId: string): Promise<Mensagem> {

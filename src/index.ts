@@ -2,22 +2,22 @@ import "reflect-metadata"; // Deve ser importado antes de qualquer entidade ou u
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import { AppDataSource } from "./database/ormconfig.js";
-
-import familiaRoutes from "./routes/familiaRoutes.js";
-import parenteRoutes from "./routes/parenteRoutes.js";
-import mensagemRoutes from "./routes/mensagemRoutes.ts";
 import { cors } from "hono/cors";
+import dotenv from "dotenv";
+
+import authRoutes from "./routes/authRoutes.ts";
+import protectedRoutes from "./routes/protectedRoutes.ts";
+
+dotenv.config();
 
 const app = new Hono();
 
 app.use(cors({ origin: "*" }));
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
 
-app.route("/familia", familiaRoutes);
-app.route("/parente", parenteRoutes);
-app.route("/mensagem", mensagemRoutes);
+
+app.route("/api", protectedRoutes);
+
+app.route("/auth", authRoutes);
 
 const port = 3000;
 console.log(`Server is running on http://localhost:${port}`);
