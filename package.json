@@ -3,6 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
     "typeorm": "typeorm-ts-node-esm"
   },
   "dependencies": {

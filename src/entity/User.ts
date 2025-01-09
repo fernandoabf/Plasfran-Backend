@@ -37,7 +37,7 @@ export class User extends BaseEntity {
   role?: string;
 
   @OneToMany(() => Mensagem, (mensagem) => mensagem.owner)
-  mensagem?: Mensagem[];
+  mensagem?: Mensagem[];  
 
   @Column("timestamptz", { default: () => "NOW()", onUpdate: "NOW()" })
   updatedAt!: Date;
