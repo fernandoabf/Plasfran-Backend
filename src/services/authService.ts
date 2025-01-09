@@ -65,7 +65,6 @@ export const registerEmployee = async (
   password: string,
   name: string,
   role: string = "user"
-  
 ) => {
   const employeeRepository = AppDataSource.getRepository(Employee);
 

@@ -15,9 +15,6 @@ export class User extends BaseEntity {
   @Column("varchar", { unique: true })
   email?: string;
 
-  @Column("varchar", { default: "user" })
-  role?: string;
-
   @Column("varchar", { nullable: true })
   name?: string;
 
@@ -35,6 +32,9 @@ export class User extends BaseEntity {
 
   @Column("timestamptz", { default: () => "NOW()" })
   createdAt!: Date;
+
+  @Column("varchar", { default: "user" })
+  role?: string;
 
   @OneToMany(() => Mensagem, (mensagem) => mensagem.owner)
   mensagem?: Mensagem[];
