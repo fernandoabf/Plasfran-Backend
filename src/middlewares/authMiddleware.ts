@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
 import type { Context } from "hono";
+import dotenv from "dotenv";
+
+import { AppDataSource } from "../database/ormconfig.ts";
 import { User } from "../entity/User.ts";
 import { Mensagem } from "../entity/Mensagem.ts"; // Certifique-se de importar o modelo de Message
-
-import dotenv from "dotenv";
-import { AppDataSource } from "../database/ormconfig.ts";
 import { Employee } from "../entity/Employee.ts";
+
 dotenv.config();
 
 export const authenticateToken = async (c: Context, next: Function) => {
@@ -38,7 +39,6 @@ export const authenticateToken = async (c: Context, next: Function) => {
 
 export const canEditOrDeleteMessage = async (c: Context, next: Function) => {
   // Recuperar a mensagem com base no ID da URL ou do corpo da requisição
-  // parei aqui
   const mensagemRepository = AppDataSource.getRepository(Mensagem);
 
   const messageId = c.req.param("mensagemId"); // ou outro jeito de capturar o ID da mensagem

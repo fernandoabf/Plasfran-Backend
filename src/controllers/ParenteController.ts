@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { ParenteService } from "../services/ParenteService.js";
+import { isAdminOrEmployee } from "../middlewares/authMiddleware.js";
 
 // Instancia o controlador de rotas
 const parenteController = new Hono();
@@ -53,6 +54,7 @@ parenteController.get("/:parenteID", async (ctx) => {
   }
 });
 
+parenteController.use("/*", isAdminOrEmployee);
 // Rota para adicionar um parente ao número de contrato
 parenteController.post("/:numeroContrato", async (ctx) => {
   const numeroContrato = parseInt(ctx.req.param("numeroContrato"), 10);
