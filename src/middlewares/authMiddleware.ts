@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import type { Context } from "hono";
 import dotenv from "dotenv";
-import { AppDataSource } from "../database/ormconfig.ts";
-import { User } from "../entity/User.ts";
-import { Employee } from "../entity/Employee.ts";
-import { Mensagem } from "../entity/Mensagem.ts";
+import { AppDataSource } from "../database/ormconfig.js";
+import { User } from "../entity/User.js";
+import { Employee } from "../entity/Employee.js";
+import { Mensagem } from "../entity/Mensagem.js";
 
 dotenv.config();
 
