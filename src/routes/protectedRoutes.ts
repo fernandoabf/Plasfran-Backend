@@ -1,8 +1,8 @@
 import { Hono } from "hono";
-import { authenticateToken, isAdmin } from "../middlewares/authMiddleware.ts";
-import parenteController from "../controllers/ParenteController.ts";
-import mensagemController from "../controllers/MensagemController.ts";
-import familiaController from "../controllers/FamiliaController.ts";
+import { authenticateToken, isAdmin } from "../middlewares/authMiddleware.js";
+import parenteController from "../controllers/ParenteController.js";
+import mensagemController from "../controllers/MensagemController.js";
+import familiaController from "../controllers/FamiliaController.js";
 
 const protectedRoutes = new Hono();
 

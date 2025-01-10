@@ -5,8 +5,8 @@ import { AppDataSource } from "./database/ormconfig.js";
 import { cors } from "hono/cors";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/authRoutes.ts";
-import protectedRoutes from "./routes/protectedRoutes.ts";
+import authRoutes from "./routes/authRoutes.js";
+import protectedRoutes from "./routes/protectedRoutes.js";
 
 dotenv.config();
 

@@ -1,7 +1,7 @@
-import { AppDataSource } from "../database/ormconfig.ts";
-import { Mensagem } from "../entity/Mensagem.ts";
-import { Parente } from "../entity/Parente.ts";
-import { User } from "../entity/User.ts";
+import { AppDataSource } from "../database/ormconfig.js";
+import { Mensagem } from "../entity/Mensagem.js";
+import { Parente } from "../entity/Parente.js";
+import { User } from "../entity/User.js";
 
 export class MensagemService {
   private parenteRepository = AppDataSource.getRepository(Parente);

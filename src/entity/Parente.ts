@@ -4,9 +4,10 @@ import {
   Column,
   ManyToOne,
   OneToMany,
+  type Relation,
 } from "typeorm";
-import { Familia } from "./Familia.ts";
-import { Mensagem } from "./Mensagem.ts";
+import type { Familia } from "./Familia.js";
+import type { Mensagem } from "./Mensagem.js";
 
 @Entity()
 export class Parente {
@@ -28,11 +29,11 @@ export class Parente {
   @Column({ type: "varchar" })
   mensagemObito!: string;
 
-  @OneToMany(() => Mensagem, (mensagem) => mensagem.parente)
-  mensagens?: Mensagem[];
+  @OneToMany("Mensagem", "parente", { lazy: true, nullable: true })
+  mensagens!: Relation<Mensagem[]>;
 
-  @ManyToOne(() => Familia, (familia) => familia.parentes)
-  familia!: Familia;
+  @ManyToOne("Familia", "parentes", { lazy: true, nullable: true })
+  familia!: Relation<Familia>;
 
   @Column({ type: "timestamp", nullable: true, default: null })
   editadoData?: Date;

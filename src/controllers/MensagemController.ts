@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { MensagemService } from "../services/MensagemService.ts";
-import { canEditOrDeleteMessage } from "../middlewares/authMiddleware.ts";
+import { MensagemService } from "../services/MensagemService.js";
+import { canEditOrDeleteMessage } from "../middlewares/authMiddleware.js";
 
 const mensagemController = new Hono();
 const mensagemService = new MensagemService();

@@ -1,16 +1,19 @@
-import "reflect-metadata"; // Importante para o TypeORM
 import { DataSource } from "typeorm";
+import dotenv from "dotenv";
+import { User } from "./../entity/User.js";
+import { Familia } from "./../entity/Familia.js";
+import { Parente } from "./../entity/Parente.js";
+import { Employee } from "./../entity/Employee.js";
+import { Mensagem } from "./../entity/Mensagem.js";
+
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "localhost",
-  port: 5432,
-  username: "teste", // Atualize com o seu usuário
-  password: "teste", // Atualize com a sua senha
-  database: "testedatabase", // Atualize com o seu banco
-  synchronize: true, // Sincroniza com o banco
-  logging: true, // Loga as queries para debug
-  entities: ["src/entity/*.ts"], // Certifique-se de que as entidades estão sendo registradas aqui
-  migrations: ["src/migrations/*.ts"],
+  url: process.env.DATABASE_URL,
+  synchronize: true,
+  logging: true,
+  entities: ["./../entity/*.js"],
+  migrations: [],
   subscribers: [],
 });
