@@ -15,20 +15,20 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  # hono-server:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: hono-server
-  #   depends_on:
-  #     - db
-  #   environment:
-  #     DATABASE_URL: "postgresql://teste:teste@db:5432/testedatabase"
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - mynetwork
-  #   command: ["npm", "start"]
+  hono-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hono-server
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: "postgresql://teste:teste@db:5432/testedatabase"
+    ports:
+      - "3000:3000"
+    networks:
+      - mynetwork
+    command: ["npm", "start"]
 
 networks:
   mynetwork:
