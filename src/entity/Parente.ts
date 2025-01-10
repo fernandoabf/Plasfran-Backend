@@ -6,10 +6,10 @@ import {
   OneToMany,
   type Relation,
 } from "typeorm";
-import type { Familia } from "./Familia.js";
-import type { Mensagem } from "./Mensagem.js";
+import { Familia } from "./Familia.js";
+import { Mensagem } from "./Mensagem.js";
 
-@Entity()
+@Entity("parente")
 export class Parente {
   @PrimaryGeneratedColumn("uuid")
   parenteId!: string;
@@ -29,10 +29,13 @@ export class Parente {
   @Column({ type: "varchar" })
   mensagemObito!: string;
 
-  @OneToMany("Mensagem", "parente", { lazy: true, nullable: true })
+  // Relação OneToMany correta
+  @OneToMany(() => Mensagem, (mensagem) => mensagem.parente)
   mensagens!: Relation<Mensagem[]>;
 
-  @ManyToOne("Familia", "parentes", { lazy: true, nullable: true })
+  @ManyToOne(() => Familia, (familia) => familia.parentes, {
+    lazy: true,
+  })
   familia!: Relation<Familia>;
 
   @Column({ type: "timestamp", nullable: true, default: null })

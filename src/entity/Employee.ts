@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
-@Entity("employee") // Nome da tabela
+@Entity("employee")
 export class Employee extends BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn("uuid")
   id?: string;
 
   @Column("varchar", { unique: true })

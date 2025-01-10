@@ -18,7 +18,11 @@ app.route("/api", protectedRoutes);
 
 app.route("/auth", authRoutes);
 
-const port = 3000;
+app.get("/health", (c) => {
+  return c.text("OK");
+});
+
+const port = 3001;
 console.log(`Server is running on http://localhost:${port}`);
 
 AppDataSource.initialize()
