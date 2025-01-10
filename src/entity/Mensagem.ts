@@ -3,14 +3,13 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  BaseEntity,
   type Relation,
 } from "typeorm";
-import type { Parente } from "./Parente.js";
-import type { User } from "./User.js";
+import { Parente } from "./Parente.js";
+import { User } from "./User.js";
 
 @Entity("mensagem")
-export class Mensagem extends BaseEntity {
+export class Mensagem {
   @PrimaryGeneratedColumn("uuid")
   mensagemId!: string;
 
@@ -23,8 +22,9 @@ export class Mensagem extends BaseEntity {
   @Column({ type: "date" })
   sendAt!: Date;
 
-  @ManyToOne("Parente", "mensagens", { lazy: true, nullable: true })
-  parente?: Relation<Parente>;
+  // Relação ManyToOne correta
+  @ManyToOne(() => Parente, (parente) => parente.mensagens)
+  parente!: Relation<Parente>;
 
   @Column({ type: "timestamp", nullable: true, default: null })
   editadoData?: Date;
@@ -32,6 +32,6 @@ export class Mensagem extends BaseEntity {
   @Column({ type: "boolean", default: false })
   excluido?: boolean;
 
-  @ManyToOne("User", "mensagem", { lazy: true })
+  @ManyToOne(() => User, { lazy: true })
   owner!: Relation<User>;
 }

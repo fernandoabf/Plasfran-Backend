@@ -5,8 +5,8 @@ import {
   OneToMany,
   type Relation,
 } from "typeorm";
-import type { Parente } from "./Parente.js"; // Manter importação normal
-@Entity()
+import { Parente } from "./Parente.js"; // Manter importação normal
+@Entity("familia")
 export class Familia {
   @PrimaryGeneratedColumn("uuid")
   familiaId!: string;
@@ -20,7 +20,7 @@ export class Familia {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   dataCriacao!: Date;
 
-  @OneToMany("Parente", "familia", { lazy: true })
+  @OneToMany(() => Parente, (parente) => parente.familia, { nullable: true })
   parentes?: Relation<Parente[]>;
 
   @Column({ type: "timestamp", nullable: true, default: null })

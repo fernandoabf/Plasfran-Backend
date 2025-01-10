@@ -4,7 +4,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "rebuild": "docker compose down && docker volume rm server_postgres_data && docker compose up -d && rm -rf dist && tsc && node dist/index.js"
   },
   "dependencies": {
     "@hono/node-server": "^1.13.7",

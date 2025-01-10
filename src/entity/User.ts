@@ -2,14 +2,13 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  BaseEntity,
   OneToMany,
   type Relation,
 } from "typeorm";
-import type { Mensagem } from "./Mensagem.js";
+import { Mensagem } from "./Mensagem.js";
 
 @Entity("user")
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn("uuid")
   id?: string;
 
@@ -37,7 +36,10 @@ export class User extends BaseEntity {
   @Column("varchar", { default: "user" })
   role?: string;
 
-  @OneToMany("Mensagem", "owner", { lazy: true, nullable: true })
+  @OneToMany(() => Mensagem, (mensagem) => mensagem.owner, {
+    lazy: true,
+    nullable: true,
+  })
   mensagem!: Relation<Mensagem[]>;
 
   @Column("timestamptz", { default: () => "NOW()", onUpdate: "NOW()" })

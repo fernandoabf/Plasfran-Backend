@@ -6,6 +6,7 @@ import { User } from "../entity/User.js";
 export class MensagemService {
   private parenteRepository = AppDataSource.getRepository(Parente);
   private mensagemRepository = AppDataSource.getRepository(Mensagem);
+  private userRepository = AppDataSource.getRepository(User);
 
   async addMensagemToParente(
     parenteId: string,
@@ -16,7 +17,7 @@ export class MensagemService {
     const parente = await this.parenteRepository.findOne({
       where: { parenteId, excluido: false },
     });
-    const owner = await User.findOneBy({
+    const owner = await this.userRepository.findOneBy({
       email,
     });
 
@@ -39,14 +40,16 @@ export class MensagemService {
   }
   async getMensagensByParenteId(parenteId: string): Promise<Mensagem[]> {
     const parente = await this.parenteRepository.findOne({
-      where: { parenteId, excluido: false },
-      relations: ["mensagens"],
+      where: { parenteId },
+      relations: ["mensagens"], // Certifique-se de carregar as mensagens junto
     });
 
     if (!parente) {
-      throw new Error("Parente com o ID fornecido não encontrado");
+      throw new Error("Parente não encontrado");
     }
-    return parente.mensagens?.filter((mensagem) => !mensagem.excluido) ?? [];
+
+    // Filtra as mensagens excluídas
+    return parente.mensagens.filter((mensagem) => !mensagem.excluido);
   }
 
   async getMensagemById(mensagemId: string): Promise<Mensagem> {
