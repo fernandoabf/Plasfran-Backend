@@ -4,8 +4,8 @@ import {
   googleLoginController,
   refreshTokensController,
   registerEmployeeController,
-} from "../controllers/authController.ts";
-import { authenticateToken } from "../middlewares/authMiddleware.ts";
+} from "../controllers/authController.js";
+import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const authRoutes = new Hono();
 

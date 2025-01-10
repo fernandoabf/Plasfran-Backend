@@ -1,6 +1,6 @@
 import { AppDataSource } from "../database/ormconfig.js";
-import { User } from "../entity/User.ts";
-import { Employee } from "../entity/Employee.ts";
+import { User } from "../entity/User.js";
+import { Employee } from "../entity/Employee.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwtUtil.js"; // Importando os métodos de geração dos tokens
 import { OAuth2Client } from "google-auth-library";
 import jwt from "jsonwebtoken";

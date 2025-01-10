@@ -4,7 +4,7 @@ import {
   loginWithGoogle,
   refreshTokens,
   registerEmployee,
-} from "../services/authService.ts";
+} from "../services/authService.js";
 
 export const loginController = async (c: Context) => {
   const { email, password } = await c.req.json();

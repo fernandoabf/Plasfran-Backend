@@ -1,5 +1,5 @@
-import { Familia } from "../entity/Familia.ts";
-import { Parente } from "../entity/Parente.ts";
+import { Familia } from "../entity/Familia.js";
+import { Parente } from "../entity/Parente.js";
 import { AppDataSource } from "../database/ormconfig.js";
 
 export class ParenteService {
@@ -124,7 +124,7 @@ export class ParenteService {
     // Salvando o parente atualizado
     return this.parenteRepository.save(parente);
   }
-  
+
   async deleteParenteById(parenteId: string): Promise<Parente> {
     const parente = await this.parenteRepository.findOne({
       where: { parenteId, excluido: false }, // Busca o parente pelo ID

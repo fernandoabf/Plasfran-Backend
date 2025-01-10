@@ -1,5 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { Parente } from "./Parente.ts"; // Manter importação normal
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  type Relation,
+} from "typeorm";
+import type { Parente } from "./Parente.js"; // Manter importação normal
 @Entity()
 export class Familia {
   @PrimaryGeneratedColumn("uuid")
@@ -14,8 +20,8 @@ export class Familia {
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   dataCriacao!: Date;
 
-  @OneToMany(() => Parente, (parente) => parente.familia)
-  parentes?: Parente[];
+  @OneToMany("Parente", "familia", { lazy: true })
+  parentes?: Relation<Parente[]>;
 
   @Column({ type: "timestamp", nullable: true, default: null })
   editadoData?: Date;

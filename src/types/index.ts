@@ -1,5 +1,5 @@
 import type { Context } from "hono";
-import { User } from "../entity/User.ts"; // Ajuste para o tipo correto de User
+import { User } from "../entity/User"; // Ajuste para o tipo correto de User
 
 export interface CustomContext extends Context {
   state: {

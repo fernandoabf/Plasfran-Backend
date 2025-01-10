@@ -1,9 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { Parente } from "./Parente.ts";
-import { User } from "./User.ts"; // Importe o modelo de usuário
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  BaseEntity,
+  type Relation,
+} from "typeorm";
+import type { Parente } from "./Parente.js";
+import type { User } from "./User.js";
 
-@Entity()
-export class Mensagem {
+@Entity("mensagem")
+export class Mensagem extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   mensagemId!: string;
 
@@ -16,8 +23,8 @@ export class Mensagem {
   @Column({ type: "date" })
   sendAt!: Date;
 
-  @ManyToOne(() => Parente, (parente) => parente.mensagens)
-  parente!: Parente;
+  @ManyToOne("Parente", "mensagens", { lazy: true, nullable: true })
+  parente?: Relation<Parente>;
 
   @Column({ type: "timestamp", nullable: true, default: null })
   editadoData?: Date;
@@ -25,6 +32,6 @@ export class Mensagem {
   @Column({ type: "boolean", default: false })
   excluido?: boolean;
 
-  @ManyToOne(() => User, (user) => user.mensagem)
-  owner?: User;
+  @ManyToOne("User", "mensagem", { lazy: true })
+  owner!: Relation<User>;
 }

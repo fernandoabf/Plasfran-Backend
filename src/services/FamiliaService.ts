@@ -1,5 +1,5 @@
-import { Familia } from "../entity/Familia.ts";
-import { Parente } from "../entity/Parente.ts";
+import { Familia } from "../entity/Familia.js";
+import { Parente } from "../entity/Parente.js";
 import { AppDataSource } from "../database/ormconfig.js";
 
 export class FamiliaService {
