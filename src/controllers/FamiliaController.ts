@@ -36,8 +36,8 @@ familiaController.get("/:numeroContrato", async (ctx) => {
 
     return ctx.json({ message: "Família encontrada com sucesso", familia });
   } catch (error: any) {
-    console.error(error);
-    return ctx.json({ error: error.message }, 500);
+    console.error("Erro ao buscar família:", error);
+    return ctx.json({ error: "Erro ao buscar família. Tente novamente." }, 500);
   }
 });
 
@@ -104,8 +104,8 @@ familiaController.post("/", async (ctx) => {
       familiaId: familia.familiaId,
     });
   } catch (error: any) {
-    console.error(error);
-    return ctx.json({ error: error.message }, 500);
+    console.error("Erro ao criar família:", error);
+    return ctx.json({ error: "Erro ao criar família. Tente novamente." }, 500);
   }
 });
 
@@ -128,8 +128,11 @@ familiaController.patch("/:id", async (ctx) => {
 
     return ctx.json({ message: "Família atualizada com sucesso", familia });
   } catch (error: any) {
-    console.error(error);
-    return ctx.json({ error: error.message }, 500);
+    console.error("Erro ao atualizar família:", error);
+    return ctx.json(
+      { error: "Erro ao atualizar família. Tente novamente." },
+      500
+    );
   }
 });
 
@@ -152,8 +155,11 @@ familiaController.delete("/:numeroContrato", async (ctx) => {
 
     return ctx.json({ message: "Família removida com sucesso", familia });
   } catch (error: any) {
-    console.error(error);
-    return ctx.json({ error: error.message }, 500);
+    console.error("Erro ao deletar família:", error);
+    return ctx.json(
+      { error: "Erro ao deletar família. Tente novamente." },
+      500
+    );
   }
 });
 
