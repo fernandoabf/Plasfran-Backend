@@ -12,16 +12,22 @@ mensagemController.get("/:parenteId", async (ctx) => {
   try {
     const mensagens = await mensagemService.getMensagensByParenteId(parenteId);
 
+    // Se não houver mensagens, retorne um array vazio
     if (mensagens.length === 0) {
-      return ctx.json([], 404);
+      return ctx.json({ message: "Não há mensagens para este parente." }, 200); // Retorna array vazio com uma mensagem de sucesso
     }
+
+    // Caso contrário, retorne as mensagens encontradas
     return ctx.json({
       message: "Mensagens encontradas com sucesso",
       mensagens,
     });
   } catch (error: any) {
     console.error("Erro ao buscar mensagens:", error);
-    return ctx.json({ error: error.message }, 400);
+    return ctx.json(
+      { error: "Erro ao carregar mensagens. Tente novamente." },
+      500 // Código de erro 500 para falha no servidor
+    );
   }
 });
 
@@ -29,6 +35,7 @@ mensagemController.get("/:parenteId", async (ctx) => {
 mensagemController.post("/:parenteId", async (ctx) => {
   const parenteId = ctx.req.param("parenteId");
   const mensagemData = await ctx.req.json();
+
   try {
     const mensagem = await mensagemService.addMensagemToParente(
       parenteId,
@@ -43,13 +50,16 @@ mensagemController.post("/:parenteId", async (ctx) => {
     });
   } catch (error: any) {
     console.error("Erro ao adicionar mensagem:", error);
-    return ctx.json({ error: error.message }, 400);
+    return ctx.json(
+      { error: "Erro ao adicionar a mensagem. Tente novamente." },
+      400 // Código de erro 400 para solicitação inválida
+    );
   }
 });
 
 mensagemController.use("/*", canEditOrDeleteMessage);
 
-// Rota para editar uma mensagem pelo ID
+// Rota para deletar uma mensagem pelo ID
 mensagemController.delete("/:mensagemId", async (ctx) => {
   const mensagemId = ctx.req.param("mensagemId");
 
@@ -59,7 +69,10 @@ mensagemController.delete("/:mensagemId", async (ctx) => {
     return ctx.json({ message: "Mensagem deletada com sucesso" });
   } catch (error: any) {
     console.error("Erro ao deletar mensagem:", error);
-    return ctx.json({ error: error.message }, 400);
+    return ctx.json(
+      { error: "Erro ao deletar a mensagem. Tente novamente." },
+      400 // Código de erro 400 para solicitação inválida
+    );
   }
 });
 
@@ -82,7 +95,10 @@ mensagemController.patch("/:mensagemId", async (ctx) => {
     });
   } catch (error: any) {
     console.error("Erro ao editar mensagem:", error);
-    return ctx.json({ error: error.message }, 400);
+    return ctx.json(
+      { error: "Erro ao editar a mensagem. Tente novamente." },
+      400 // Código de erro 400 para solicitação inválida
+    );
   }
 });
 

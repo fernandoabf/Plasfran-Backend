@@ -9,48 +9,66 @@ import {
 export const loginController = async (c: Context) => {
   const { email, password } = await c.req.json();
 
-  const result = await loginUser(email, password);
+  try {
+    const result = await loginUser(email, password);
 
-  if (!result.success) {
-    return c.json({ error: result.message }, 401);
+    if (!result.success) {
+      return c.json({ error: result.message }, 401); // Unauthorized
+    }
+
+    // Agora retorna tanto o accessToken quanto o refreshToken
+    return c.json({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+  } catch (error: any) {
+    console.error("Erro ao realizar login:", error);
+    return c.json({ error: "Erro ao realizar login. Tente novamente." }, 500); // Internal Server Error
   }
-
-  // Agora retorna tanto o accessToken quanto o refreshToken
-  return c.json({
-    accessToken: result.accessToken,
-    refreshToken: result.refreshToken,
-  });
 };
 
 export const googleLoginController = async (c: Context) => {
   const { idToken } = await c.req.json();
 
-  const result = await loginWithGoogle(idToken);
+  try {
+    const result = await loginWithGoogle(idToken);
 
-  if (!result.success) {
-    return c.json({ error: result.message }, 401);
+    if (!result.success) {
+      return c.json({ error: result.message }, 401); // Unauthorized
+    }
+
+    // Agora retorna tanto o accessToken quanto o refreshToken
+    return c.json({
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+  } catch (error: any) {
+    console.error("Erro ao realizar login com Google:", error);
+    return c.json(
+      { error: "Erro ao realizar login com Google. Tente novamente." },
+      500
+    ); // Internal Server Error
   }
-
-  // Agora retorna tanto o accessToken quanto o refreshToken
-  return c.json({
-    accessToken: result.accessToken,
-    refreshToken: result.refreshToken,
-  });
 };
 
 export const refreshTokensController = async (c: Context) => {
   const { refreshToken } = await c.req.json();
 
-  const result = await refreshTokens(refreshToken);
+  try {
+    const result = await refreshTokens(refreshToken);
 
-  if (!result.success) {
-    return c.json({ error: result.message }, 401);
+    if (!result.success) {
+      return c.json({ error: result.message }, 401); // Unauthorized
+    }
+
+    return c.json({
+      accessToken: result.accessToken, // Novo Access Token
+      refreshToken: result.refreshToken, // O mesmo Refresh Token
+    });
+  } catch (error: any) {
+    console.error("Erro ao atualizar tokens:", error);
+    return c.json({ error: "Erro ao atualizar tokens. Tente novamente." }, 500); // Internal Server Error
   }
-
-  return c.json({
-    accessToken: result.accessToken, // Novo Access Token
-    refreshToken: result.refreshToken, // O mesmo Refresh Token
-  });
 };
 
 export const registerEmployeeController = async (c: Context) => {
@@ -63,17 +81,25 @@ export const registerEmployeeController = async (c: Context) => {
         error:
           "Acesso não autorizado. Apenas administradores podem criar contas.",
       },
-      403
+      403 // Forbidden
     );
   }
 
   const { email, password, name, role } = await c.req.json();
 
-  const result = await registerEmployee(email, password, name, role);
+  try {
+    const result = await registerEmployee(email, password, name, role);
 
-  if (!result.success) {
-    return c.json({ error: result.message }, 400);
+    if (!result.success) {
+      return c.json({ error: result.message }, 400); // Bad Request
+    }
+
+    return c.json({ message: result.message }, 201); // Created
+  } catch (error: any) {
+    console.error("Erro ao registrar funcionário:", error);
+    return c.json(
+      { error: "Erro ao registrar funcionário. Tente novamente." },
+      500
+    ); // Internal Server Error
   }
-
-  return c.json({ message: result.message }, 201);
 };
